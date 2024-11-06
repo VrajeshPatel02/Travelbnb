@@ -21,8 +21,7 @@ Setup and Installation
 
     Clone the Repository:
 
-git clone https://github.com/yourusername/hotel-booking-system.git
-
+git clone https://github.com/VrajeshPatel02/Travelbnb
 Navigate to the Project Directory:
 
 cd hotel-booking-system
