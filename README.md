@@ -24,7 +24,7 @@ Setup and Installation
 git clone https://github.com/VrajeshPatel02/Travelbnb
 Navigate to the Project Directory:
 
-cd hotel-booking-system
+cd travelbnb
 
 Set Up Environment Variables:
 
@@ -34,14 +34,6 @@ Set Up Environment Variables:
 Run the Application:
 
     ./mvnw spring-boot:run
-
-Usage
-
-    API Endpoints:
-        /bookings: Manage room bookings.
-        /users: Manage user profiles and authentication.
-        /notifications: Trigger notifications for booking updates.
-    Notifications: Each booking triggers an SMS, email, and WhatsApp message to ensure users receive real-time updates.
 
 Future Improvements
 
