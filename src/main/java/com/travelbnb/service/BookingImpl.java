@@ -25,14 +25,17 @@ public class BookingImpl implements BookingService{
     private PDFService pdfService;
     private BucketService bucketService;
     private SmsService smsService;
+    private WhatsappService whatsappService;
 
-    public BookingImpl(BookingRepository bookingRepository, PropertyRepository propertyRepository, UserEntityRepository userRepository, PDFService pdfService, BucketService bucketService, SmsService smsService) {
+
+    public BookingImpl(BookingRepository bookingRepository, PropertyRepository propertyRepository, UserEntityRepository userRepository, PDFService pdfService, BucketService bucketService, SmsService smsService, WhatsappService whatsappService) {
         this.bookingRepository = bookingRepository;
         this.propertyRepository = propertyRepository;
         this.userRepository = userRepository;
         this.pdfService = pdfService;
         this.bucketService = bucketService;
         this.smsService = smsService;
+        this.whatsappService = whatsappService;
     }
 
 
@@ -54,6 +57,7 @@ public class BookingImpl implements BookingService{
                     MultipartFile file = BookingConverter("C://Users//Keval//pdf_example//"+"Booking-Confirmation-id"+ booking.getId().toString() +".pdf");
                     String uploadedFileUrl = bucketService.uploadFile(file,"travelbnb123");
                     String smsId = smsService.sendSms(booking.getMobile(), "Your booking has been confirmed with the confirmation link: " + uploadedFileUrl);
+                    String whatappId = whatsappService.sendWhatsappMessage(booking.getMobile(), "Your booking has been confirmed with the confirmation link" + uploadedFileUrl);
                     System.out.println(smsId);
                     return EntityToDto(booking);
                 } else {
