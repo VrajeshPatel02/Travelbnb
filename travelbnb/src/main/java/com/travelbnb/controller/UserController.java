@@ -40,12 +40,11 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> verifyLogin(@RequestBody LoginDto loginDto){
-        String token = user.verifyUser(loginDto);
+        JWTTokenDto jwtTokenDto = user.verifyUser(loginDto);
+         String token = jwtTokenDto.getToken();
         if(token!=null){
-            JWTTokenDto jwtToken = new JWTTokenDto();
-            jwtToken.setType("JWT Token");
-            jwtToken.setToken(token);
-            return new ResponseEntity<>(jwtToken, HttpStatus.CREATED);
+
+            return new ResponseEntity<>(jwtTokenDto, HttpStatus.CREATED);
         }
         return new ResponseEntity<>("Invalid token", HttpStatus.INTERNAL_SERVER_ERROR);
     }

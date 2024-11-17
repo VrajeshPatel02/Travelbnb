@@ -3,6 +3,8 @@ package com.travelbnb.payload;
 public class JWTTokenDto {
     private String type;
 
+    private String userName;
+
     public String getType() {
         return type;
     }
@@ -20,4 +22,12 @@ public class JWTTokenDto {
     }
 
     private String token;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 }

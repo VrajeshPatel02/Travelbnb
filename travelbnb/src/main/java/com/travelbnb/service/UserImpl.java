@@ -1,6 +1,7 @@
 package com.travelbnb.service;
 
 import com.travelbnb.entity.User;
+import com.travelbnb.payload.JWTTokenDto;
 import com.travelbnb.payload.LoginDto;
 import com.travelbnb.payload.UserDto;
 import com.travelbnb.repository.UserEntityRepository;
@@ -62,13 +63,17 @@ public class UserImpl implements UserService{
     }
 
     @Override
-    public String verifyUser(LoginDto loginDto){
+    public JWTTokenDto verifyUser(LoginDto loginDto){
         Optional<User> opUser = userRepository.findByUsername(loginDto.getUsername());
         User appUser = opUser.get();
         if(opUser.isPresent()){
             if(BCrypt.checkpw(loginDto.getPassword(), appUser.getPassword())){
                 String token = jwtService.generateToken(appUser);
-                return token;
+                JWTTokenDto jwtTokenDto = new JWTTokenDto();
+                jwtTokenDto.setType("JWT Token");
+                jwtTokenDto.setToken(token);
+                jwtTokenDto.setUserName(appUser.getUsername());
+                return jwtTokenDto;
             }
         }
         return null;
