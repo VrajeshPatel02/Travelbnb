@@ -1,6 +1,6 @@
 // src/services/authService.ts
 import axios from 'axios';
-import { LoginRequest, LoginResponse } from '../types/auth';
+import { LoginRequest, LoginResponse, SignUpRequest } from '../types/auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -37,4 +37,12 @@ export const authService = {
   isAuthenticated(): boolean {
     return !!this.getToken();
   },
+  async signUp(credentials: SignUpRequest): Promise<void> {
+    try {
+      await api.post('/user/createUser', credentials);
+    } catch (error) {
+      throw error;
+    }
+  },
+  
 };

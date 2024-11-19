@@ -19,3 +19,11 @@ export interface LoginRequest {
     email: string;
     roles: string[];
   }
+  export interface SignUpRequest {
+    name: string;
+    username: string;
+    email: string;
+    password: string;
+    role: string;
+  }
+  
