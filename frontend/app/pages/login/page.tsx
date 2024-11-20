@@ -67,7 +67,7 @@ const LoginPage = () => {
     try {
       const loginResponse = await authService.login(formData);
       // toast.success('Login successful!');
-      router.push('/pages/Property');
+      router.push('/pages/dashboard');
     } catch (error) {
       if (error instanceof Error && error.message.includes('401')) {
         // toast.error('Invalid username or password');

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SignUpRequest } from '../../types/auth';
 import { authService } from '../../services/authService';
+import Image from 'next/image';
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -83,11 +84,7 @@ const SignUpPage = () => {
     setIsLoading(true);
     try {
       await authService.signUp(formData);
-
-      toast.success('Account created successfully!');
       router.push('/pages/login');
-    } catch (error) {
-      toast.error('An error occurred during sign-up. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -97,12 +94,16 @@ const SignUpPage = () => {
     <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
       <div className="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
         <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
-          <div>
+          <div className='flex flex-col items-center'>
             {/* <img
-              src="https://storage.googleapis.com/devitary-image-host.appspot.com/15846435184459982716-LogoMakr_7POjrN.png"
+              src="airbnb.svg"
               className="w-32 mx-auto"
               alt="Logo"
             /> */}
+            <Image src="/airbnb.svg"
+              width={300}
+              height={300}
+              alt="Airbnb Logo" />
           </div>
           <div className="mt-12 flex flex-col items-center">
             <h1 className="text-2xl xl:text-3xl font-extrabold">Sign up</h1>
@@ -175,6 +176,10 @@ const SignUpPage = () => {
                 >
                   {isLoading ? 'Signing up...' : 'Sign Up'}
                 </button>
+                <p className="mt-6 text-xs text-gray-600 text-center">
+                  Already have an account? {' '}
+                  <a href='/pages/login' className="border-b border-gray-500 border-dotted">Login</a>
+                </p>
 
                 <p className="mt-6 text-xs text-gray-600 text-center">
                   I agree to abide by the platform’s{' '}
@@ -191,13 +196,13 @@ const SignUpPage = () => {
           </div>
         </div>
         <div className="flex-1 w-40 bg-indigo-90 text-center hidden lg:flex items-center justify-center m-50">
-  <div
-    className="m-12 xl:m-16 w-full h-full bg-center bg-no-repeat bg-cover"
-    style={{
-      backgroundImage: "url('/airbnbimg.jpeg')",
-    }}
-  />
-</div>
+          <div
+            className="m-12 xl:m-16 w-full h-full bg-center bg-no-repeat bg-cover"
+            style={{
+              backgroundImage: "url('/airbnbimg.jpeg')",
+            }}
+          />
+        </div>
       </div>
     </div>
   );

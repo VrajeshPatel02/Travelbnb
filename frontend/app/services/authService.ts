@@ -12,6 +12,14 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
@@ -19,6 +27,8 @@ export const authService = {
         '/user/login', 
         credentials
       );
+      const { token } = response.data;
+      localStorage.setItem('token', token); // Save token to localStorage
       return response.data;
     } catch (error) {
       throw error;
@@ -46,3 +56,4 @@ export const authService = {
   },
   
 };
+export default api;

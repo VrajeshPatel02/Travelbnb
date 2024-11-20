@@ -36,8 +36,10 @@ public class JWTRequestFilter extends OncePerRequestFilter {
         String accessTokenHeader = request.getHeader("Authorization");
         String refreshTokenHeader = request.getHeader("Refresh-Token");
 
+
         if (accessTokenHeader != null && accessTokenHeader.startsWith("Bearer ")) {
             String accessToken = accessTokenHeader.substring(7);
+            System.out.println("Access token header: " + accessToken);
             processAccessToken(accessToken, refreshTokenHeader, request, response);
         }
 

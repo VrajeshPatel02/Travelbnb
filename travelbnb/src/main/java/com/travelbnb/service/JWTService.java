@@ -35,7 +35,7 @@ public class JWTService {
                 .withExpiresAt(new Date(System.currentTimeMillis() + expiryTime))
                 .withIssuer(issuer)
                 .sign(algorithm);
-        System.out.println(sign);
+        System.out.println("Token Generated : " + sign);
         return sign;
     }
     public String generateRefreshToken(String username) {
