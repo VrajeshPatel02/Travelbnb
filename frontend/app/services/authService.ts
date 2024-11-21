@@ -14,7 +14,7 @@ const api = axios.create({
 // services/authservice.ts
 export const fetchProperties = async () => {
   try {
-    const response = await fetch("http://localhost:8080/api/v1/property/allProperties");
+    const response = await fetch(API_URL + "property/allProperties");
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }

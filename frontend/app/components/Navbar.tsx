@@ -23,7 +23,7 @@ const Navbar = () => {
           <a aria-current="page" className="flex items-center" href="/">
             <img
               className="h-7 w-auto"
-              src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+              src="airbnb-logo.svg"
               alt="Logo"
             />
             <p className="sr-only">Website Title</p>
