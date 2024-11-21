@@ -5,6 +5,7 @@ import Navbar from "@/app/components/Navbar";
 import api from "@/app/services/authService";
 import { Property } from "@/app/types/property";
 import { useEffect, useState } from "react";
+import { fetchProperties } from "../../services/authService"; // Adjust the path based on your folder structure
 
 const Dashboard = () => {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -12,7 +13,7 @@ const Dashboard = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
-    const fetchProperties = async () => {
+    const loadProperties = async () => {
       try {
         const response = await api.get<Property[]>("/property/allProperties");
         setProperties(response.data);
