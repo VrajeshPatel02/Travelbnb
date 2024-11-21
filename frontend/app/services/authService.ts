@@ -11,6 +11,26 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+// services/authservice.ts
+export const fetchProperties = async () => {
+  try {
+    const response = await fetch("http://localhost:8080/api/v1/property/allProperties");
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to fetch properties:", err);
+    throw err; // Re-throw the error so the calling component can handle it
+  }
+};
+export const logoutUser = () => {
+  // Clear user session data
+  localStorage.removeItem("user");
+};
+
 
 export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
@@ -24,6 +44,7 @@ export const authService = {
       throw error;
     }
   },
+  
 
   async logout(): Promise<void> {
     localStorage.removeItem('token');

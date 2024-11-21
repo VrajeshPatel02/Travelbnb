@@ -1,24 +1,47 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchProperties } from "../../services/authService"; // Adjust the path based on your folder structure
+import { useRouter } from "next/navigation";
 
-const Dashboard = () => {
+const UserDashboard = () => {
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState("");
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const loadProperties = async () => {
+    // Check if user is logged in
+    const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
+    if (!loggedInUser?.token) {
+      router.push("/pages/login"); // Redirect to login page if not logged in
+    } else {
+      setUser(loggedInUser); // Set user data if logged in
+    }
+
+    // Fetch properties
+    const fetchProperties = async () => {
       try {
-        const data = await fetchProperties();
+        const response = await fetch("http://localhost:8080/api/v1/property/allProperties");
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
         setProperties(data);
-      } catch (err: any) {
+      } catch (err) {
+        console.error("Failed to fetch properties:", err);
         setError(err.message);
       }
     };
 
-    loadProperties();
-  }, []);
+    fetchProperties();
+  }, [router]); // Added router as dependency to prevent stale closure issues
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    router.push("/login"); // Redirect to login after logout
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -57,20 +80,20 @@ const Dashboard = () => {
             </label>
           </div>
 
-          {/* Login and Sign Up */}
+          {/* Profile and Logout */}
           <div className="flex items-center gap-3">
-            <a
-              className="hidden items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50 sm:inline-flex"
-              href="/pages/sign-up"
-            >
-              Sign Up
-            </a>
-            <a
-              className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-blue-500"
-              href="/pages/login"
-            >
-              Login
-            </a>
+            {user && (
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-700">{user.name}</span>
+                  <div className="relative">
+                    <button className="bg-blue-600 text-white rounded-full px-4 py-2" onClick={handleLogout}>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -83,10 +106,7 @@ const Dashboard = () => {
             <p className="text-red-500 text-center">{error}</p>
           ) : properties.length > 0 ? (
             properties.map((property) => (
-              <div
-                key={property.id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden"
-              >
+              <div key={property.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <img
                   className="h-48 w-full object-cover"
                   src="https://via.placeholder.com/400x300" // Replace with property image URL
@@ -94,15 +114,9 @@ const Dashboard = () => {
                 />
                 <div className="p-4">
                   <h2 className="text-xl text-neutral-600 font-semibold">{property.name}</h2>
-                  <p className="text-sm text-gray-500">
-                    Guests: {property.noGuests}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {property.no_bedrooms} Bedrooms • {property.no_bathrooms} Bathrooms
-                  </p>
-                  <p className="text-lg  text-neutral-600 font-bold mt-2">
-                    ₹{property.price.toLocaleString()}
-                  </p>
+                  <p className="text-sm text-gray-500">Guests: {property.noGuests}</p>
+                  <p className="text-sm text-gray-500">{property.no_bedrooms} Bedrooms • {property.no_bathrooms} Bathrooms</p>
+                  <p className="text-lg text-neutral-600 font-bold mt-2">₹{property.price.toLocaleString()}</p>
                   <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500">
                     View Details
                   </button>
@@ -118,4 +132,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default UserDashboard;
