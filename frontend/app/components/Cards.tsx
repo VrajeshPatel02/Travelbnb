@@ -1,3 +1,5 @@
+'use client';
+
 import { Property } from "../types/property";
 
   interface PropertyCardProps {
