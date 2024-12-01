@@ -16,6 +16,7 @@ const Dashboard = () => {
       try {
         const response = await api.get<Property[]>("/property/allProperties");
         setProperties(response.data);
+        console.log(properties);
       } catch (err: unknown) {
         console.error("Failed to fetch properties:", err);
         setError((err as Error).message);

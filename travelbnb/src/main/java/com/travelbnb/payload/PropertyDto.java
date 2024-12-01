@@ -12,6 +12,7 @@ public class PropertyDto {
     private Integer price;
     private Long country;
     private Long location;
+    private String image_url;
 
     public Long getCountry() {
         return country;
@@ -75,5 +76,13 @@ public class PropertyDto {
 
     public void setPrice(Integer price) {
         this.price = price;
+    }
+
+    public String getImage_url() {
+        return image_url;
+    }
+
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
     }
 }

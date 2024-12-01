@@ -1,9 +1,11 @@
 package com.travelbnb.service;
 import com.travelbnb.entity.Country;
+import com.travelbnb.entity.Image;
 import com.travelbnb.entity.Location;
 import com.travelbnb.entity.Property;
 import com.travelbnb.payload.PropertyDto;
 import com.travelbnb.repository.CountryRepository;
+import com.travelbnb.repository.ImageRepository;
 import com.travelbnb.repository.LocationRepository;
 import com.travelbnb.repository.PropertyRepository;
 import org.springframework.data.domain.Page;
@@ -21,11 +23,13 @@ public class PropertyImpl implements PropertyService{
     private PropertyRepository propertyRepository;
     private CountryRepository countryRepository;
     private LocationRepository locationRepository;
+    private ImageRepository imageRepository;
 
-    public PropertyImpl(PropertyRepository propertyRepository, CountryRepository countryRepository, LocationRepository locationRepository) {
+    public PropertyImpl(PropertyRepository propertyRepository, CountryRepository countryRepository, LocationRepository locationRepository, ImageRepository imageRepository) {
         this.propertyRepository = propertyRepository;
         this.countryRepository = countryRepository;
         this.locationRepository = locationRepository;
+        this.imageRepository = imageRepository;
     }
 
     @Override
@@ -102,6 +106,13 @@ public class PropertyImpl implements PropertyService{
         pdto.setPrice(entity.getPrice());
         pdto.setCountry(entity.getCountry().getId());
         pdto.setLocation(entity.getLocation().getId());
+
+        Optional<Image> byId = imageRepository.findById(entity.getId());
+        if (byId.isPresent()){
+            pdto.setImage_url(byId.get().getImageUrl());
+        }else {
+            pdto.setImage_url("");
+        }
         return pdto;
     }
 
@@ -113,10 +124,10 @@ public class PropertyImpl implements PropertyService{
         }else if(sortDir.equalsIgnoreCase("desc")){
             pageable = PageRequest.of(pageNo,pageSize, Sort.by(sortBy).descending());
         }
+        assert pageable != null;
         Page<Property> all = propertyRepository.findAll(pageable);
         List<Property> content = all.getContent();
-        List<PropertyDto> dto = all.stream().map(p->EntityToDto(p)).collect(Collectors.toList());
-        return dto;
+        return all.stream().map(this::EntityToDto).collect(Collectors.toList());
     }
 
     public boolean existsProperty(long id){

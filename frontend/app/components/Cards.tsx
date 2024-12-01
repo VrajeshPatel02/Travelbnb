@@ -9,7 +9,7 @@ import { Property } from "../types/property";
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <img
           className="h-48 w-full object-cover"
-          src="https://via.placeholder.com/400x300" // Replace with property image URL
+          src={property.image_url} // Replace with property image URL
           alt={property.name}
         />
         <div className="p-4">
