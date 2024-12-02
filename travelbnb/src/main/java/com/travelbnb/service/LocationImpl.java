@@ -18,9 +18,8 @@ public class LocationImpl implements LocationService{
     @Override
     public LocationDto addLocation(LocationDto ldto) {
         Location entity = DtoToEntity(ldto);
-        LocationDto dto = EntityToDto(entity);
         Location saved = locationRepository.save(entity);
-        return dto;
+        return EntityToDto(saved);
     }
 
     @Override

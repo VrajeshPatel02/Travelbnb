@@ -18,9 +18,8 @@ public class CountryImpl implements CountryService{
     @Override
     public CountryDto addCountry(CountryDto country) {
         Country entity = DtoToEntity(country);
-        CountryDto dto = EntityToDto(entity);
         Country saved = countryRepository.save(entity);
-        return dto;
+        return EntityToDto(saved);
     }
 
     @Override
