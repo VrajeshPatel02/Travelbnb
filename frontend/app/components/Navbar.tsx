@@ -11,6 +11,8 @@ const Navbar = ({ setSearchResults }: NavbarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -28,14 +30,14 @@ const Navbar = ({ setSearchResults }: NavbarProps) => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:8080/api/v1/property/allProperties", {
+      const response = await axios.get(API_URL+"/property/allProperties", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setSearchResults(response.data); // Pass all properties to Dashboard
-    } catch (error) {
-      console.error("Error fetching all properties:", error.response?.data || error.message);
+    } catch (error: unknown) {
+      console.error("Error fetching all properties:", (error as any).response?.data || (error as Error).message);
       alert("Failed to fetch properties. Please try again.");
     } finally {
       setIsLoading(false);
@@ -53,7 +55,7 @@ const Navbar = ({ setSearchResults }: NavbarProps) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:8080/api/v1/property/search/properties?name=${searchQuery}`,
+        API_URL+`/property/search/properties?name=${searchQuery}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -62,7 +64,7 @@ const Navbar = ({ setSearchResults }: NavbarProps) => {
       );
       setSearchResults(response.data); // Pass results to Dashboard
     } catch (error) {
-      console.error("Error fetching search results:", error.response?.data || error.message);
+      console.error("Error fetching search results:", (error as any).response?.data || (error as Error).message);
       alert("Failed to fetch search results. Please try again.");
     } finally {
       setIsLoading(false);

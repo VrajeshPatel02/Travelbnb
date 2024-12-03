@@ -6,14 +6,8 @@ import api from "@/app/services/authService";
 import { Property } from "@/app/types/property";
 import { useEffect, useState } from "react";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "../../components/ui/pagination"
+  Button, buttonVariants
+} from "../../components/ui/button"
 
 
 const Dashboard = () => {
@@ -44,7 +38,7 @@ const Dashboard = () => {
 
       <div className="pt-24 px-6">
         <h1 className="text-3xl font-bold m-6 text-center">Properties</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
           {error ? (
             <p className="text-red-500 text-center">{error}</p>
           ) : (searchResults || properties).length > 0 ? (
@@ -56,25 +50,11 @@ const Dashboard = () => {
           )}
         </div>
       </div>
-      <Pagination className="p-4">
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious href="#" />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">1</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">2</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext href="#" />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+      <div className="flex items-center justify-center">
+      <Button>
+        Load more
+      </Button>
+      </div>
     </div>
     
 
