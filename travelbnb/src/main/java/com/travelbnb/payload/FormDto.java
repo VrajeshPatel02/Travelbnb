@@ -3,7 +3,8 @@ package com.travelbnb.payload;
 import lombok.Data;
 
 @Data
-public class FormDto {private Long id;
+public class FormDto {
+    private Long id;
     private String name;
     private Integer noGuests;
     private Integer no_bedrooms;

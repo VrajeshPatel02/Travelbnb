@@ -24,7 +24,7 @@ public class PropertyController {
     }
 
     @PostMapping("/addNewProperty")
-    public ResponseEntity<?> addNewProperty(@ModelAttribute PropertyDto dto,
+    public ResponseEntity<?> addNewProperty(@ModelAttribute FormDto dto,
                                             @RequestParam("file") MultipartFile file) {
         FormDto saved = property.addNewProperty(dto, file);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);

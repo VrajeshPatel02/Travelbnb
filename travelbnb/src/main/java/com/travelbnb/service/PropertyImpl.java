@@ -140,18 +140,38 @@ public class PropertyImpl implements PropertyService{
         if(verifyCountry(fdto.getCountry()) == null) {
             Country country = new Country();
             country.setName(fdto.getCountry());
-            Country savedCountry = countryRepository.save(country);
-
-        };
+            countryRepository.save(country);
+        }
         if(verifyLocation(fdto.getLocation()) == null) {
             Location location = new Location();
             location.setName(fdto.getLocation());
-            Location savedLocation = locationRepository.save(location);
+            locationRepository.save(location);
         }
+        Property property = new Property();
+        property.setName(fdto.getName());
+        property.setNoGuests(fdto.getNoGuests());
+        property.setNo_bedrooms(fdto.getNo_bedrooms());
+        property.setNo_bathrooms(fdto.getNo_bathrooms());
+        property.setPrice(fdto.getPrice());
+        property.setCountry(verifyCountry(fdto.getCountry()));
+        property.setLocation(verifyLocation(fdto.getLocation()));
+        Property savedProperty = propertyRepository.save(property);
         FormDto formDto = new FormDto();
-
-
-//        ImageDto imageDetails = imageService.uploadImageFile(file, "travelbnb123");
+        formDto.setId(savedProperty.getId());
+        formDto.setName(savedProperty.getName());
+        formDto.setNoGuests(savedProperty.getNoGuests());
+        formDto.setNo_bedrooms(savedProperty.getNo_bedrooms());
+        formDto.setNo_bathrooms(savedProperty.getNo_bathrooms());
+        formDto.setPrice(savedProperty.getPrice());
+        formDto.setCountry(savedProperty.getCountry().getName());
+        formDto.setLocation(savedProperty.getLocation().getName());
+        if(file!= null) {
+            Image image = new Image();
+            image.setProperty(savedProperty);
+            image.setImageUrl(imageService.uploadImageFile(file, "travelbnb123", savedProperty.getId()).getImageUrl());
+            imageRepository.save(image);
+            formDto.setImage_url(image.getImageUrl());
+        }
         return formDto;
     }
 

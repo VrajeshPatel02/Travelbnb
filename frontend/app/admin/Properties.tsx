@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Property } from "../types/property";
 import { useToast } from "@/hooks/use-toast";
 import Input from "../components/ui/Input";
-import axios from "axios";
+
+import api from "@/app/services/authService";
 const Properties: React.FC = () => {
     const { toast } = useToast()
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -16,6 +17,7 @@ const Properties: React.FC = () => {
     price: "",
     image: null as File | null,
   });
+
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -56,51 +58,48 @@ const Properties: React.FC = () => {
     e.preventDefault();
 
     if (!formData.image) {
-      toast({
-        description: "Please upload an image.",
-      });
-      return;
+        toast({
+            description: "Please upload an image.",
+        });
+        return;
     }
 
     try {
-      const newProperty: Property = {
-        id: 0, // Replace with actual ID if needed after API call
-        name: formData.propertyName,
-        noGuests: parseInt(formData.numberOfGuests, 10),
-        no_bedrooms: parseInt(formData.numberOfBedrooms, 10),
-        no_bathrooms: parseInt(formData.numberOfBathrooms, 10),
-        price: parseFloat(formData.price),
-        country: parseInt(formData.country, 10),
-        location: parseInt(formData.location, 10),
-        image_url: imagePreview || "",
-      };
+        
+        const formDataToSend = new FormData();
+        formDataToSend.append("file", formData.image); 
+        formDataToSend.append("name", formData.propertyName); 
+        formDataToSend.append("noGuests", formData.numberOfGuests); 
+        formDataToSend.append("no_bedrooms", formData.numberOfBedrooms); 
+        formDataToSend.append("no_bathrooms", formData.numberOfBathrooms); 
+        formDataToSend.append("price", formData.price); 
+        formDataToSend.append("country", formData.country);
+        formDataToSend.append("location", formData.location); 
 
-      const formDataToSend = new FormData();
-      formDataToSend.append("property", JSON.stringify(newProperty));
-      if (formData.image) {
-        formDataToSend.append("image", formData.image);
-      }
 
-      const response = await axios.post<Property>(API_URL + "/property/addNewProperty", {
-        body: formDataToSend,
-      });
-      console.log(response.status);
-      if (!response.status) {
-        throw new Error("Failed to save property.");
-      }
+        const response = await api.post("/property/addNewProperty", formDataToSend, {
+            headers: {
+                "Content-Type": "multipart/form-data", 
+            },
+        });
 
-      toast({
-        description: "Property successfully saved!",
-      });
-      resetForm();
+        if (response.status === 201) {
+            toast({
+                description: "Property successfully saved!",
+            });
+            resetForm();
+        } else {
+            throw new Error("Unexpected response from server");
+        }
     } catch (error) {
-      console.error("Error saving property:", error);
-      toast({
-        variant: "destructive",
-        description: "Failed to save property. Please try again.",
-      });
+        console.error("Error saving property:", error);
+        toast({
+            variant: "destructive",
+            description: "Failed to save property. Please try again.",
+        });
     }
-  };
+};
+
 
   const handleImageUpload = () => {
     const input = document.createElement("input");
