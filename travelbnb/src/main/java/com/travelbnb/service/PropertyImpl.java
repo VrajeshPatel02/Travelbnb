@@ -3,6 +3,8 @@ import com.travelbnb.entity.Country;
 import com.travelbnb.entity.Image;
 import com.travelbnb.entity.Location;
 import com.travelbnb.entity.Property;
+import com.travelbnb.payload.FormDto;
+import com.travelbnb.payload.ImageDto;
 import com.travelbnb.payload.PropertyDto;
 import com.travelbnb.repository.CountryRepository;
 import com.travelbnb.repository.ImageRepository;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,12 +27,14 @@ public class PropertyImpl implements PropertyService{
     private CountryRepository countryRepository;
     private LocationRepository locationRepository;
     private ImageRepository imageRepository;
+    private ImageService imageService;
 
-    public PropertyImpl(PropertyRepository propertyRepository, CountryRepository countryRepository, LocationRepository locationRepository, ImageRepository imageRepository) {
+    public PropertyImpl(PropertyRepository propertyRepository, CountryRepository countryRepository, LocationRepository locationRepository, ImageRepository imageRepository, ImageService imageService) {
         this.propertyRepository = propertyRepository;
         this.countryRepository = countryRepository;
         this.locationRepository = locationRepository;
         this.imageRepository = imageRepository;
+        this.imageService = imageService;
     }
 
     @Override
@@ -130,9 +135,34 @@ public class PropertyImpl implements PropertyService{
         return all.stream().map(this::EntityToDto).collect(Collectors.toList());
     }
 
-    public boolean existsProperty(long id){
+    @Override
+    public FormDto addNewProperty(FormDto fdto, MultipartFile file) {
+        if(verifyCountry(fdto.getCountry()) == null) {
+            Country country = new Country();
+            country.setName(fdto.getCountry());
+            Country savedCountry = countryRepository.save(country);
 
-        boolean val = propertyRepository.existsById(id);
-        return val;
+        };
+        if(verifyLocation(fdto.getLocation()) == null) {
+            Location location = new Location();
+            location.setName(fdto.getLocation());
+            Location savedLocation = locationRepository.save(location);
+        }
+        FormDto formDto = new FormDto();
+
+
+//        ImageDto imageDetails = imageService.uploadImageFile(file, "travelbnb123");
+        return formDto;
     }
+
+    public Country verifyCountry(String country_name){
+        Optional<Country> byName = countryRepository.findByName(country_name);
+        return byName.orElse(null);
+    }
+
+    public Location verifyLocation(String location_name){
+        Optional<Location> byName = locationRepository.findByName(location_name);
+        return byName.orElse(null);
+    }
+
 }

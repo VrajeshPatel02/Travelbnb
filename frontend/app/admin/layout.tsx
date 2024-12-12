@@ -1,5 +1,6 @@
 'use client';
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
+import { Toaster } from "../components/ui/toaster"
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -10,14 +11,13 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
-import Loading from './loading';
+import Properties from './Properties';
 
 
 const { Header, Sider, Content } = Layout;
 
 // Dummy components for each section
 const Dashboard = () => <h1>Dashboard Content</h1>;
-const Properties = () => <h1>Properties Management</h1>;
 const Reviews = () => <h1>Reviews Section</h1>;
 const Analytics = () => <h1>Analytics Section</h1>;
 const Settings = () => <h1>Settings</h1>;
@@ -51,7 +51,6 @@ const AdminPanel: React.FC = () => {
   };
 
   return (
-    <Suspense fallback={<Loading />}>
       <Layout style={{ minHeight: '100vh' }}>
         {/* Sidebar */}
         <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -124,8 +123,8 @@ const AdminPanel: React.FC = () => {
             {renderContent()} {/* Render content dynamically */}
           </Content>
         </Layout>
+        <Toaster />
       </Layout>
-    </Suspense>
   );
 };
 

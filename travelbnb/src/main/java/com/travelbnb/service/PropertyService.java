@@ -1,7 +1,9 @@
 package com.travelbnb.service;
 
 import com.travelbnb.entity.Property;
+import com.travelbnb.payload.FormDto;
 import com.travelbnb.payload.PropertyDto;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,4 +16,5 @@ public interface PropertyService {
     PropertyDto updatePropertyDetails(PropertyDto pdto);
 
     List<PropertyDto> getAll(int pageSize, int pageNo, String sortBy, String sortDir);
+    FormDto addNewProperty(FormDto pdto, MultipartFile file);
 }
