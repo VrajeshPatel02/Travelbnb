@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { Property } from "../types/property";
 import { useToast } from "@/hooks/use-toast";
 import Input from "../components/ui/Input";
-
 import api from "@/app/services/authService";
+
 const Properties: React.FC = () => {
-    const { toast } = useToast()
-    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     location: "",
     country: "",
@@ -15,12 +14,12 @@ const Properties: React.FC = () => {
     numberOfBedrooms: "",
     numberOfBathrooms: "",
     price: "",
-    image: null as File | null,
   });
 
-
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  // Handle input changes for text fields
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -29,17 +28,16 @@ const Properties: React.FC = () => {
     });
   };
 
+  // Handle image file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
-      setFormData({
-        ...formData,
-        image: file,
-      });
+      setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
+  // Reset the form and states
   const resetForm = () => {
     setFormData({
       location: "",
@@ -49,57 +47,60 @@ const Properties: React.FC = () => {
       numberOfBedrooms: "",
       numberOfBathrooms: "",
       price: "",
-      image: null,
     });
+    setImageFile(null);
     setImagePreview(null);
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.image) {
-        toast({
-            description: "Please upload an image.",
-        });
-        return;
+    if (!imageFile) {
+      toast({
+        description: "Please upload an image.",
+      });
+      return;
     }
+
+    if (isSubmitting) return; // Prevent duplicate submissions
+    setIsSubmitting(true);
 
     try {
-        
-        const formDataToSend = new FormData();
-        formDataToSend.append("file", formData.image); 
-        formDataToSend.append("name", formData.propertyName); 
-        formDataToSend.append("noGuests", formData.numberOfGuests); 
-        formDataToSend.append("no_bedrooms", formData.numberOfBedrooms); 
-        formDataToSend.append("no_bathrooms", formData.numberOfBathrooms); 
-        formDataToSend.append("price", formData.price); 
-        formDataToSend.append("country", formData.country);
-        formDataToSend.append("location", formData.location); 
+      const formDataToSend = new FormData();
+      formDataToSend.append("file", imageFile); // Append the image file
+      formDataToSend.append("name", formData.propertyName);
+      formDataToSend.append("noGuests", formData.numberOfGuests);
+      formDataToSend.append("no_bedrooms", formData.numberOfBedrooms);
+      formDataToSend.append("no_bathrooms", formData.numberOfBathrooms);
+      formDataToSend.append("price", formData.price);
+      formDataToSend.append("country", formData.country);
+      formDataToSend.append("location", formData.location);
 
+      const response = await api.post("/property/addNewProperty", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-        const response = await api.post("/property/addNewProperty", formDataToSend, {
-            headers: {
-                "Content-Type": "multipart/form-data", 
-            },
-        });
-
-        if (response.status === 201) {
-            toast({
-                description: "Property successfully saved!",
-            });
-            resetForm();
-        } else {
-            throw new Error("Unexpected response from server");
-        }
-    } catch (error) {
-        console.error("Error saving property:", error);
+      if (response.status === 201) {
         toast({
-            variant: "destructive",
-            description: "Failed to save property. Please try again.",
+          description: "Property successfully saved!",
         });
+        resetForm();
+      } else {
+        throw new Error("Unexpected response from server");
+      }
+    } catch (error) {
+      console.error("Error saving property:", error);
+      toast({
+        variant: "destructive",
+        description: "Failed to save property. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-};
-
+  };
 
   const handleImageUpload = () => {
     const input = document.createElement("input");
@@ -109,10 +110,7 @@ const Properties: React.FC = () => {
       const target = e.target as HTMLInputElement;
       const file = target.files?.[0] || null;
       if (file) {
-        setFormData({
-          ...formData,
-          image: file,
-        });
+        setImageFile(file);
         setImagePreview(URL.createObjectURL(file));
       }
     };
@@ -185,7 +183,7 @@ const Properties: React.FC = () => {
             e.preventDefault();
             const file = e.dataTransfer.files[0];
             if (file) {
-              setFormData({ ...formData, image: file });
+              setImageFile(file);
               setImagePreview(URL.createObjectURL(file));
             }
           }}
@@ -216,8 +214,9 @@ const Properties: React.FC = () => {
       <button
         type="submit"
         className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600"
+        disabled={isSubmitting}
       >
-        Submit
+        {isSubmitting ? "Submitting..." : "Submit"}
       </button>
     </form>
   );

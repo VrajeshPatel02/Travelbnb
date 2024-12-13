@@ -23,9 +23,8 @@ public class UserImpl implements UserService{
     @Override
     public UserDto addUser(UserDto userDto) {
         User entity = DtoToEntity(userDto);
-        UserDto dto = EntityToDto(entity);
         User saved = userRepository.save(entity);
-        return dto;
+        return EntityToDto(saved);
     }
 
     public UserDto EntityToDto(User entity) {

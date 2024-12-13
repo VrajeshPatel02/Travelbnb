@@ -112,7 +112,7 @@ public class PropertyImpl implements PropertyService{
         pdto.setCountry(entity.getCountry().getId());
         pdto.setLocation(entity.getLocation().getId());
 
-        Optional<Image> byId = imageRepository.findById(entity.getId());
+        Optional<Image> byId = imageRepository.findByPropertyId(entity.getId());
         if (byId.isPresent()){
             pdto.setImage_url(byId.get().getImageUrl());
         }else {
@@ -166,11 +166,8 @@ public class PropertyImpl implements PropertyService{
         formDto.setCountry(savedProperty.getCountry().getName());
         formDto.setLocation(savedProperty.getLocation().getName());
         if(file!= null) {
-            Image image = new Image();
-            image.setProperty(savedProperty);
-            image.setImageUrl(imageService.uploadImageFile(file, "travelbnb123", savedProperty.getId()).getImageUrl());
-            imageRepository.save(image);
-            formDto.setImage_url(image.getImageUrl());
+            final String image = imageService.uploadImageFile(file, "travelbnb123", savedProperty.getId()).getImageUrl();
+            formDto.setImage_url(image);
         }
         return formDto;
     }
