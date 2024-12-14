@@ -32,19 +32,15 @@ public class PropertyController {
 
     @GetMapping("/search/properties")
     public ResponseEntity<?> searchProperties(
-            @RequestParam String name,
-    @RequestParam(name="pageSize", defaultValue="10", required=false) int pageSize,
-    @RequestParam(name="pageNo", defaultValue="0", required=false) int pageNo,
-    @RequestParam(name="sortBy", defaultValue="id", required=false) String sortBy,
-    @RequestParam(name="sortDir", defaultValue="asc", required=false) String sortDir
+            @RequestParam String name
     ) {
-        List<PropertyDto> propertyDtos = property.searchProperty(name, pageSize, pageNo, sortBy, sortDir);
+        List<PropertyDto> propertyDtos = property.searchProperty(name);
         return new ResponseEntity<>(propertyDtos, HttpStatus.OK);
     }
     @GetMapping("/allProperties")
     public ResponseEntity<?> getAllProperties(
-            @RequestParam(name="pageSize", defaultValue="10", required=false) int pageSize,
             @RequestParam(name="pageNo", defaultValue="0", required=false) int pageNo,
+            @RequestParam(name="pageSize", defaultValue="3", required=false) int pageSize,
             @RequestParam(name="sortBy", defaultValue="id", required=false) String sortBy,
             @RequestParam(name="sortDir", defaultValue="asc", required=false) String sortDir
             )
@@ -67,5 +63,11 @@ public class PropertyController {
             return new ResponseEntity<>("Success", HttpStatus.OK);
         }
         return new ResponseEntity<>("Property not found", HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPropertyById(@PathVariable Long id) {
+        PropertyDto p = property.getPropertyById(id);
+        return ResponseEntity.ok(p);
     }
 }

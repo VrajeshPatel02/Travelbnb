@@ -38,17 +38,9 @@ public class PropertyImpl implements PropertyService{
     }
 
     @Override
-    public List<PropertyDto> searchProperty(String name, int pageSize, int pageNo, String sortBy, String sortDir) {
-        PageRequest pageable = null;
-        if(sortDir.equalsIgnoreCase("asc")){
-            pageable = PageRequest.of(pageNo,pageSize, Sort.by(sortBy).ascending());
-        }else if(sortDir.equalsIgnoreCase("desc")){
-            pageable = PageRequest.of(pageNo,pageSize, Sort.by(sortBy).descending());
-        }
-        Page<Property> allprop = propertyRepository.searchProperty(name,pageable);
-        List<Property> pue = allprop.getContent();
-        List<PropertyDto> pud =pue.stream().map( p-> EntityToDto(p)).collect(Collectors.toList());
-        return pud;
+    public List<PropertyDto> searchProperty(String name) {
+        List<Property> properties = propertyRepository.searchProperty(name);
+        return properties.stream().map(this::EntityToDto).collect(Collectors.toList());
     }
     @Override
     public PropertyDto addProperty(PropertyDto pdto, long countryId, long locationId) {
@@ -155,6 +147,7 @@ public class PropertyImpl implements PropertyService{
         property.setPrice(fdto.getPrice());
         property.setCountry(verifyCountry(fdto.getCountry()));
         property.setLocation(verifyLocation(fdto.getLocation()));
+        property.setDescription(fdto.getDescription());
         Property savedProperty = propertyRepository.save(property);
         FormDto formDto = new FormDto();
         formDto.setId(savedProperty.getId());
@@ -165,6 +158,7 @@ public class PropertyImpl implements PropertyService{
         formDto.setPrice(savedProperty.getPrice());
         formDto.setCountry(savedProperty.getCountry().getName());
         formDto.setLocation(savedProperty.getLocation().getName());
+        formDto.setDescription(savedProperty.getDescription());
         if(file!= null) {
             final String image = imageService.uploadImageFile(file, "travelbnb123", savedProperty.getId()).getImageUrl();
             formDto.setImage_url(image);
@@ -180,6 +174,15 @@ public class PropertyImpl implements PropertyService{
     public Location verifyLocation(String location_name){
         Optional<Location> byName = locationRepository.findByName(location_name);
         return byName.orElse(null);
+    }
+    public PropertyDto getPropertyById(Long id) {
+        Optional<Property> property = propertyRepository.findById(id);
+        if(property.isPresent()){
+            PropertyDto propertyDto = EntityToDto(property.get());
+            return propertyDto;
+        }else{
+            throw( new RuntimeException("Property not found with ID: " + id));
+        }
     }
 
 }

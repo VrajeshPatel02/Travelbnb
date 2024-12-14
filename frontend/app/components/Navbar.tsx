@@ -1,7 +1,9 @@
 "use client"; // Add this at the top of the file
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "@/app/services/authService";
+import { authService } from "@/app/services/authService";
+
 
 interface NavbarProps {
   setSearchResults: (results: any[]) => void;
@@ -11,7 +13,6 @@ const Navbar = ({ setSearchResults }: NavbarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 
   useEffect(() => {
@@ -29,12 +30,7 @@ const Navbar = ({ setSearchResults }: NavbarProps) => {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(API_URL+"/property/allProperties", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get("/property/allProperties");
       setSearchResults(response.data); // Pass all properties to Dashboard
     } catch (error: unknown) {
       console.error("Error fetching all properties:", (error as any).response?.data || (error as Error).message);
@@ -53,15 +49,7 @@ const Navbar = ({ setSearchResults }: NavbarProps) => {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        API_URL+`/property/search/properties?name=${searchQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get(`/property/search/properties?name=${searchQuery}`);
       setSearchResults(response.data); // Pass results to Dashboard
     } catch (error) {
       console.error("Error fetching search results:", (error as any).response?.data || (error as Error).message);
@@ -72,8 +60,7 @@ const Navbar = ({ setSearchResults }: NavbarProps) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Clear the token
-    setIsAuthenticated(false);
+    authService.logout(); // Call authentication service to log out user
     window.location.href = "/pages/login"; // Redirect to login page
   };
 

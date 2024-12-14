@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PropertyService {
 
-    List<PropertyDto> searchProperty(String name,int pageSize, int pageNo, String sortBy, String sortDir);
+    List<PropertyDto> searchProperty(String name);
 
     PropertyDto addProperty(PropertyDto pdto, long countryId, long locationId);
     boolean deleteProperty(Long id);

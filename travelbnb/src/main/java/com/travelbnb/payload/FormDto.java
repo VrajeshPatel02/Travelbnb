@@ -13,4 +13,5 @@ public class FormDto {
     private String country;
     private String location;
     private String image_url;
+    private String description;
 }

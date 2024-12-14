@@ -35,6 +35,11 @@ public class Property {
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @Column(name = "description", length = 1000, nullable = false)
+    private String description;
+
+
+
     public Long getId() {
         return id;
     }
@@ -97,5 +102,13 @@ public class Property {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
