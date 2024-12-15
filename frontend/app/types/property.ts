@@ -7,5 +7,6 @@ export interface Property {
   price: number;
   country: number;
   location: number;
+  description: string;
   image_url: string;
 }

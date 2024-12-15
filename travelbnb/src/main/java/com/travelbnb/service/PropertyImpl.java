@@ -103,7 +103,7 @@ public class PropertyImpl implements PropertyService{
         pdto.setPrice(entity.getPrice());
         pdto.setCountry(entity.getCountry().getId());
         pdto.setLocation(entity.getLocation().getId());
-
+        pdto.setDescription(entity.getDescription());
         Optional<Image> byId = imageRepository.findByPropertyId(entity.getId());
         if (byId.isPresent()){
             pdto.setImage_url(byId.get().getImageUrl());

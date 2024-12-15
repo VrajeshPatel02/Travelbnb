@@ -14,13 +14,13 @@ const Properties: React.FC = () => {
     numberOfBedrooms: "",
     numberOfBathrooms: "",
     price: "",
+    description: "",
+    image: null as File | null,
   });
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  // Handle input changes for text fields
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -28,16 +28,17 @@ const Properties: React.FC = () => {
     });
   };
 
-  // Handle image file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
-      setImageFile(file);
+      setFormData({
+        ...formData,
+        image: file,
+      });
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  // Reset the form and states
   const resetForm = () => {
     setFormData({
       location: "",
@@ -47,28 +48,27 @@ const Properties: React.FC = () => {
       numberOfBedrooms: "",
       numberOfBathrooms: "",
       price: "",
+      description: "",
+      image: null,
     });
-    setImageFile(null);
     setImagePreview(null);
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!imageFile) {
+    if (!formData.image) {
       toast({
         description: "Please upload an image.",
       });
       return;
     }
 
-    if (isSubmitting) return; // Prevent duplicate submissions
+    if (isSubmitting) {return};
     setIsSubmitting(true);
-
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("file", imageFile); // Append the image file
+      formDataToSend.append("file", formData.image);
       formDataToSend.append("name", formData.propertyName);
       formDataToSend.append("noGuests", formData.numberOfGuests);
       formDataToSend.append("no_bedrooms", formData.numberOfBedrooms);
@@ -76,6 +76,7 @@ const Properties: React.FC = () => {
       formDataToSend.append("price", formData.price);
       formDataToSend.append("country", formData.country);
       formDataToSend.append("location", formData.location);
+      formDataToSend.append("description", formData.description);
 
       const response = await api.post("/property/addNewProperty", formDataToSend, {
         headers: {
@@ -110,7 +111,10 @@ const Properties: React.FC = () => {
       const target = e.target as HTMLInputElement;
       const file = target.files?.[0] || null;
       if (file) {
-        setImageFile(file);
+        setFormData({
+          ...formData,
+          image: file,
+        });
         setImagePreview(URL.createObjectURL(file));
       }
     };
@@ -175,6 +179,20 @@ const Properties: React.FC = () => {
 
       <div className="mb-5">
         <label className="block text-sm font-medium text-gray-700 mb-2">
+          Description
+        </label>
+        <textarea
+          name="description"
+          placeholder="Enter a description of the property"
+          value={formData.description}
+          onChange={handleInputChange}
+          className="w-full p-2 border rounded-lg"
+          rows={4}
+        ></textarea>
+      </div>
+
+      <div className="mb-5">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Upload Image
         </label>
         <div
@@ -183,7 +201,7 @@ const Properties: React.FC = () => {
             e.preventDefault();
             const file = e.dataTransfer.files[0];
             if (file) {
-              setImageFile(file);
+              setFormData({ ...formData, image: file });
               setImagePreview(URL.createObjectURL(file));
             }
           }}
@@ -214,9 +232,8 @@ const Properties: React.FC = () => {
       <button
         type="submit"
         className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600"
-        disabled={isSubmitting}
       >
-        {isSubmitting ? "Submitting..." : "Submit"}
+        Submit
       </button>
     </form>
   );
