@@ -77,16 +77,28 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
     return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`;
   };
 
+  const closeDropdown = () => setShowDropdown(false);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".dropdown-container")) {
+        closeDropdown();
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   return (
     <header className="fixed inset-x-0 top-0 z-30 mx-auto w-full max-w-screen-lg border border-gray-100 bg-white/80 py-4 shadow-lg backdrop-blur-lg md:top-6 md:rounded-3xl">
       <div className="flex items-center justify-between px-6">
-        {/* Logo */}
         <a href="/" className="flex items-center">
           <img src="/airbnb-logo.svg" alt="Logo" className="h-8 w-auto" />
           <span className="sr-only">Website Title</span>
         </a>
 
-        {/* Search Bar */}
         <label className="relative flex-1 mx-6 flex items-center bg-white border border-gray-300 py-2 px-4 rounded-full shadow-md focus-within:ring-2 focus-within:ring-gray-300">
           <input
             value={searchQuery}
@@ -104,51 +116,34 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
           </button>
         </label>
 
-        {/* Authentication Links */}
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
-            <>
-              {userDetails && (
-                <div className="relative">
+            <div className="relative dropdown-container">
+              <button
+                onClick={() => setShowDropdown((prev) => !prev)}
+                className="relative inline-flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full overflow-hidden"
+              >
+                <img
+                  src={getAvatarUrl(userDetails?.username || "")}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              </button>
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4">
+                  <div className="text-center">
+                    <h1 className="text-lg font-bold">{userDetails?.username}</h1>
+                    <p className="text-gray-600">{userDetails?.email}</p>
+                  </div>
                   <button
-                    onClick={() => setShowDropdown((prev) => !prev)}
-                    className="relative inline-flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full overflow-hidden"
+                    onClick={handleLogout}
+                    className="mt-4 w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-500"
                   >
-                    <img
-                      src={getAvatarUrl(userDetails.username)}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                    />
+                    Logout
                   </button>
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
-                      <div className="p-4">
-                        <p className="text-sm font-medium text-gray-800">
-                          Username: {userDetails.username}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Email: {userDetails.email}
-                        </p>
-                      </div>
-                      <div className="border-t border-gray-200">
-                        <button
-                          onClick={() => setShowDropdown(false)}
-                          className="w-full text-center text-sm py-2 hover:bg-gray-100"
-                        >
-                          Close
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all duration-150 hover:bg-red-500"
-              >
-                Logout
-              </button>
-            </>
+            </div>
           ) : (
             <>
               <a
