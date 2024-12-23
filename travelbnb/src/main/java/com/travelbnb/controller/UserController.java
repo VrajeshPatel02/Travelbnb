@@ -1,9 +1,9 @@
 package com.travelbnb.controller;
 
+import com.travelbnb.entity.User;
 import com.travelbnb.payload.JWTTokenDto;
 import com.travelbnb.payload.LoginDto;
 import com.travelbnb.payload.UserDto;
-import com.travelbnb.service.JWTService;
 import com.travelbnb.service.UserImpl;
 import com.travelbnb.service.UserService;
 import jakarta.validation.Valid;
@@ -20,8 +20,6 @@ import java.util.Objects;
 public class UserController {
     @Autowired
     private UserService user;
-    @Autowired
-    private UserImpl userImpl;
 
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDto dto, BindingResult result){
@@ -41,7 +39,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> verifyLogin(@RequestBody LoginDto loginDto){
         JWTTokenDto jwtTokenDto = user.verifyUser(loginDto);
-         String token = jwtTokenDto.getToken();
+        String token = jwtTokenDto.getToken();
         if(token!=null){
 
             return new ResponseEntity<>(jwtTokenDto, HttpStatus.CREATED);

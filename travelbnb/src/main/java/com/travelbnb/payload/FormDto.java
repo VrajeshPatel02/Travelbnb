@@ -1,5 +1,4 @@
 package com.travelbnb.payload;
-
 import lombok.Data;
 
 @Data
@@ -14,4 +13,5 @@ public class FormDto {
     private String location;
     private String image_url;
     private String description;
+    private UserDto user;
 }

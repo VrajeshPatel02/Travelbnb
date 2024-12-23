@@ -6,6 +6,8 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "booking")
 public class Booking {
@@ -42,75 +44,4 @@ public class Booking {
     @Column(name = "total_cost")
     private Integer totalCost;
 
-    public Integer getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(Integer totalCost) {
-        this.totalCost = totalCost;
-    }
-
-    public Integer getTotalNights() {
-        return totalNights;
-    }
-
-    public void setTotalNights(Integer totalNights) {
-        this.totalNights = totalNights;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Property getProperty() {
-        return property;
-    }
-
-    public void setProperty(Property property) {
-        this.property = property;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
 }

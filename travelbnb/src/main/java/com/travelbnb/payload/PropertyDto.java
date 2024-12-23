@@ -18,5 +18,4 @@ public class PropertyDto {
     private Long location;
     private String image_url;
     private String description;
-
 }

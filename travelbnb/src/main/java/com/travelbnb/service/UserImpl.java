@@ -5,6 +5,7 @@ import com.travelbnb.payload.JWTTokenDto;
 import com.travelbnb.payload.LoginDto;
 import com.travelbnb.payload.UserDto;
 import com.travelbnb.repository.UserEntityRepository;
+import org.springframework.jdbc.support.CustomSQLErrorCodesTranslation;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +13,8 @@ import java.util.Optional;
 
 @Service
 public class UserImpl implements UserService{
-    private UserEntityRepository userRepository;
-    private JWTService jwtService;
+    private final UserEntityRepository userRepository;
+    private final JWTService jwtService;
 
     public UserImpl(UserEntityRepository userRepository, JWTService jwtService) {
         this.userRepository = userRepository;
@@ -35,6 +36,9 @@ public class UserImpl implements UserService{
         dto.setEmail(entity.getEmail());
         dto.setPassword(entity.getPassword());
         dto.setRole(entity.getRole());
+//        if(entity.getRole() == "ROLE_HOST"){
+//            dto.set
+//        }
         return dto;
     }
 
@@ -64,14 +68,14 @@ public class UserImpl implements UserService{
     @Override
     public JWTTokenDto verifyUser(LoginDto loginDto){
         Optional<User> opUser = userRepository.findByUsername(loginDto.getUsername());
-        User appUser = opUser.get();
         if(opUser.isPresent()){
+            User appUser = opUser.get();
             if(BCrypt.checkpw(loginDto.getPassword(), appUser.getPassword())){
                 String token = jwtService.generateToken(appUser);
                 JWTTokenDto jwtTokenDto = new JWTTokenDto();
                 jwtTokenDto.setType("JWT Token");
                 jwtTokenDto.setToken(token);
-                jwtTokenDto.setUserName(appUser.getUsername());
+                jwtTokenDto.setUser(new UserDto(appUser.getId(), appUser.getName(), appUser.getUsername(), appUser.getEmail(), appUser.getRole()));
                 return jwtTokenDto;
             }
         }
@@ -108,4 +112,18 @@ public class UserImpl implements UserService{
         }
         return null;
     }
+
+    @Override
+    public UserDto promoteUserToHost(Long id) {
+        boolean b = userRepository.existsById(id);
+        if(b){
+            User user = userRepository.getReferenceById(id);
+            user.setRole("ROLE_HOST");
+            User save = userRepository.save(user);
+            return EntityToDto(save);
+        } else{
+            throw new RuntimeException("User not does not exisits by id : " + id);
+        }
+    }
+
 }

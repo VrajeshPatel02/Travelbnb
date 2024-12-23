@@ -1,6 +1,6 @@
 // src/services/authService.ts
 import axios from 'axios';
-import { LoginRequest, LoginResponse, SignUpRequest } from '../types/auth';
+import { LoginRequest, LoginResponse, SignUpRequest, User } from '../types/auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -44,11 +44,12 @@ export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
       const response = await api.post<LoginResponse>(
-        '/user/login', 
+        '/user/login',
         credentials
       );
-      const { token } = response.data;
+      const { token, user } = response.data;
       localStorage.setItem('token', token); // Save token to localStorage
+      localStorage.setItem('user', JSON.stringify(user));
       return response.data;
     } catch (error) {
       throw error;
@@ -63,6 +64,11 @@ export const authService = {
 
   getToken(): string | null {
     return localStorage.getItem('token');
+  },
+
+  getUser(): User | null {
+    const userJson = localStorage.getItem('user');
+    return userJson ? (JSON.parse(userJson) as User) : null;
   },
 
   isAuthenticated(): boolean {

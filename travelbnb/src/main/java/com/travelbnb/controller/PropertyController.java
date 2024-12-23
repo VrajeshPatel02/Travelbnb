@@ -1,11 +1,14 @@
 package com.travelbnb.controller;
 
+import com.travelbnb.entity.User;
 import com.travelbnb.payload.FormDto;
 import com.travelbnb.payload.PropertyDto;
 import com.travelbnb.service.PropertyImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,8 +28,9 @@ public class PropertyController {
 
     @PostMapping("/addNewProperty")
     public ResponseEntity<?> addNewProperty(@ModelAttribute FormDto dto,
-                                            @RequestParam("file") MultipartFile file) {
-        FormDto saved = property.addNewProperty(dto, file);
+                                            @RequestParam("file") MultipartFile file,
+                                            @AuthenticationPrincipal User user){
+        FormDto saved = property.addNewProperty(dto, file, user);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
@@ -45,7 +49,7 @@ public class PropertyController {
             @RequestParam(name="sortDir", defaultValue="asc", required=false) String sortDir
             )
     {
-        List<PropertyDto> dto = property.getAll(pageSize,pageNo, sortBy, sortDir);
+        Page<PropertyDto> dto = property.getAll(pageSize,pageNo, sortBy, sortDir);
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
     @PutMapping("/updateProperty")
@@ -56,7 +60,7 @@ public class PropertyController {
         }
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
-    @DeleteMapping("/deleteproperty")
+    @DeleteMapping("/deleteProperty")
     public ResponseEntity<?> deleteProperty(@RequestParam Long id){
         boolean b = property.deleteProperty(id);
         if(!b){

@@ -1,11 +1,8 @@
 package com.travelbnb.service;
-import com.travelbnb.entity.Country;
-import com.travelbnb.entity.Image;
-import com.travelbnb.entity.Location;
-import com.travelbnb.entity.Property;
+import com.travelbnb.entity.*;
 import com.travelbnb.payload.FormDto;
-import com.travelbnb.payload.ImageDto;
 import com.travelbnb.payload.PropertyDto;
+import com.travelbnb.payload.UserDto;
 import com.travelbnb.repository.CountryRepository;
 import com.travelbnb.repository.ImageRepository;
 import com.travelbnb.repository.LocationRepository;
@@ -28,13 +25,15 @@ public class PropertyImpl implements PropertyService{
     private LocationRepository locationRepository;
     private ImageRepository imageRepository;
     private ImageService imageService;
+    private UserImpl userService;
 
-    public PropertyImpl(PropertyRepository propertyRepository, CountryRepository countryRepository, LocationRepository locationRepository, ImageRepository imageRepository, ImageService imageService) {
+    public PropertyImpl(PropertyRepository propertyRepository, CountryRepository countryRepository, LocationRepository locationRepository, ImageRepository imageRepository, ImageService imageService, UserImpl userService) {
         this.propertyRepository = propertyRepository;
         this.countryRepository = countryRepository;
         this.locationRepository = locationRepository;
         this.imageRepository = imageRepository;
         this.imageService = imageService;
+        this.userService = userService;
     }
 
     @Override
@@ -104,6 +103,7 @@ public class PropertyImpl implements PropertyService{
         pdto.setCountry(entity.getCountry().getId());
         pdto.setLocation(entity.getLocation().getId());
         pdto.setDescription(entity.getDescription());
+
         Optional<Image> byId = imageRepository.findByPropertyId(entity.getId());
         if (byId.isPresent()){
             pdto.setImage_url(byId.get().getImageUrl());
@@ -114,7 +114,7 @@ public class PropertyImpl implements PropertyService{
     }
 
     @Override
-    public List<PropertyDto> getAll(int pageSize, int pageNo, String sortBy, String sortDir) {
+    public Page<PropertyDto> getAll(int pageSize, int pageNo, String sortBy, String sortDir) {
         PageRequest pageable = null;
         if(sortDir.equalsIgnoreCase("asc")){
             pageable = PageRequest.of(pageNo,pageSize, Sort.by(sortBy).ascending());
@@ -124,17 +124,17 @@ public class PropertyImpl implements PropertyService{
         assert pageable != null;
         Page<Property> all = propertyRepository.findAll(pageable);
         List<Property> content = all.getContent();
-        return all.stream().map(this::EntityToDto).collect(Collectors.toList());
+        return all.map(this::EntityToDto);
     }
 
     @Override
-    public FormDto addNewProperty(FormDto fdto, MultipartFile file) {
-        if(verifyCountry(fdto.getCountry()) == null) {
+    public FormDto addNewProperty(FormDto fdto, MultipartFile file, User user) {
+        if (verifyCountry(fdto.getCountry()) == null) {
             Country country = new Country();
             country.setName(fdto.getCountry());
             countryRepository.save(country);
         }
-        if(verifyLocation(fdto.getLocation()) == null) {
+        if (verifyLocation(fdto.getLocation()) == null) {
             Location location = new Location();
             location.setName(fdto.getLocation());
             locationRepository.save(location);
@@ -148,7 +148,10 @@ public class PropertyImpl implements PropertyService{
         property.setCountry(verifyCountry(fdto.getCountry()));
         property.setLocation(verifyLocation(fdto.getLocation()));
         property.setDescription(fdto.getDescription());
+        property.setUser(user);
         Property savedProperty = propertyRepository.save(property);
+
+        // Create a DTO to return
         FormDto formDto = new FormDto();
         formDto.setId(savedProperty.getId());
         formDto.setName(savedProperty.getName());
@@ -159,12 +162,16 @@ public class PropertyImpl implements PropertyService{
         formDto.setCountry(savedProperty.getCountry().getName());
         formDto.setLocation(savedProperty.getLocation().getName());
         formDto.setDescription(savedProperty.getDescription());
-        if(file!= null) {
+        formDto.setUser(new UserDto(user.getId(), user.getName(), user.getUsername(), user.getEmail(), user.getRole())); // Map only required fields
+
+        if (file != null) {
             final String image = imageService.uploadImageFile(file, "travelbnb123", savedProperty.getId()).getImageUrl();
             formDto.setImage_url(image);
         }
+
         return formDto;
     }
+
 
     public Country verifyCountry(String country_name){
         Optional<Country> byName = countryRepository.findByName(country_name);

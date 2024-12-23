@@ -7,17 +7,19 @@ export interface LoginRequest {
     token: string;
     user: {
       id: number;
+      name: string;
       username: string;
       email: string;
-      roles: string[];
+      roles: string;
     };
   }
   
   export interface User {
     id: number;
+    name: string;
     username: string;
     email: string;
-    roles: string[];
+    roles: string;
   }
   export interface SignUpRequest {
     name: string;
