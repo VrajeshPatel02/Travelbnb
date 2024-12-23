@@ -7,6 +7,7 @@ export interface LoginRequest {
     token: string;
     user: {
       id: number;
+      name: string;
       username: string;
       email: string;
       roles: string[];
@@ -15,6 +16,7 @@ export interface LoginRequest {
   
   export interface User {
     id: number;
+    name: string;
     username: string;
     email: string;
     roles: string[];
@@ -26,4 +28,21 @@ export interface LoginRequest {
     password: string;
     role: string;
   }
-  
+
+  export interface Property {
+    id: number;
+    name: string;
+    noGuests: number;
+    no_bedrooms: number;
+    no_bathrooms: number;
+    price: number;
+    country: {
+      id: number;
+      name: string;
+    };
+    location: {
+      id: number;
+      name: string;
+    };
+    description: string | null;
+  }

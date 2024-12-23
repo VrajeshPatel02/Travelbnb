@@ -1,6 +1,6 @@
 // src/services/authService.ts
 import axios from 'axios';
-import { LoginRequest, LoginResponse, SignUpRequest } from '../types/auth';
+import { LoginRequest, LoginResponse, SignUpRequest, User } from '../types/auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -14,7 +14,7 @@ const api = axios.create({
 // services/authservice.ts
 export const fetchProperties = async () => {
   try {
-    const response = await fetch(API_URL + "property/allProperties");
+    const response = await fetch(API_URL + "/property/allProperties");
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
@@ -47,8 +47,9 @@ export const authService = {
         '/user/login', 
         credentials
       );
-      const { token } = response.data;
+      const { token, user } = response.data;
       localStorage.setItem('token', token); // Save token to localStorage
+      localStorage.setItem('user', JSON.stringify(user));
       return response.data;
     } catch (error) {
       throw error;
@@ -63,6 +64,11 @@ export const authService = {
 
   getToken(): string | null {
     return localStorage.getItem('token');
+  },
+
+  getUser(): User | null {
+    const userJson = localStorage.getItem('user');
+    return userJson ? (JSON.parse(userJson) as User) : null;
   },
 
   isAuthenticated(): boolean {
