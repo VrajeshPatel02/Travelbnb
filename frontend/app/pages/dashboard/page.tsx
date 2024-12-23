@@ -21,7 +21,7 @@ const Dashboard = () => {
     
     setIsLoading(true);
     try {
-      const response = await api.get(`/property/allProperties?pageNo=${page}&pageSize=6`);
+      const response = await api.get(`/property/allProperties?pageNo=${page}&pageSize=3`);
       const newContent = response.data.content;
       
       // Update hasMore based on whether we received any new content
