@@ -1,6 +1,7 @@
+"use client"
 import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import Input from "../components/ui/Input";
+import Input from "../../components/ui/Input";
 import api from "@/app/services/authService";
 
 const Properties: React.FC = () => {
@@ -63,7 +64,7 @@ const Properties: React.FC = () => {
       });
       return;
     }
-
+    
     if (loading) return;
 
     setLoading(true);
@@ -124,6 +125,7 @@ const Properties: React.FC = () => {
   };
 
   return (
+    
     <form
       onSubmit={handleSubmit}
       className="w-full max-w-lg mx-auto p-8 bg-white rounded-lg shadow"
