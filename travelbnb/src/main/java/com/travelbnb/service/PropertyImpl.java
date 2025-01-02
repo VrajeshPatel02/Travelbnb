@@ -2,6 +2,7 @@ package com.travelbnb.service;
 import com.travelbnb.entity.*;
 import com.travelbnb.payload.*;
 import com.travelbnb.repository.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -24,6 +25,8 @@ public class PropertyImpl implements PropertyService{
     final private ImageService imageService;
     final private FavouriteRepository favouriteRepository;
     final private UserEntityRepository userRepository;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
 
     public PropertyImpl(PropertyRepository propertyRepository, CountryRepository countryRepository, LocationRepository locationRepository, ImageRepository imageRepository, ImageService imageService, FavouriteRepository favouriteRepository, UserEntityRepository userRepository) {
         this.propertyRepository = propertyRepository;
@@ -206,7 +209,7 @@ public class PropertyImpl implements PropertyService{
         if (files != null && files.length > 0) {
             List<ImageDto> imageDtos = new ArrayList<>();
             for (MultipartFile file : files) {
-                ImageDto imageDto = imageService.uploadImageFile(file, "travelbnb123", savedProperty.getId());
+                ImageDto imageDto = imageService.uploadImageFile(file, bucketName, savedProperty.getId());
                 imageDtos.add(imageDto);
             }
             formDto.setImage_url(imageDtos);
