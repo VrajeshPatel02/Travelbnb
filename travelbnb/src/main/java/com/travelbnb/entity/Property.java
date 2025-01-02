@@ -1,9 +1,14 @@
 package com.travelbnb.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 
-
+@Getter
+@Setter
 @Entity
 @Table(name = "property")
 public class Property {
@@ -35,67 +40,14 @@ public class Property {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    public Long getId() {
-        return id;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "description", nullable = false, length = 1000)
+    private String description;
 
-    public String getName() {
-        return name;
-    }
+    @OneToMany(mappedBy = "property", orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getNoGuests() {
-        return noGuests;
-    }
-
-    public void setNoGuests(Integer noGuests) {
-        this.noGuests = noGuests;
-    }
-
-    public Integer getNo_bedrooms() {
-        return no_bedrooms;
-    }
-
-    public void setNo_bedrooms(Integer no_bedrooms) {
-        this.no_bedrooms = no_bedrooms;
-    }
-
-    public Integer getNo_bathrooms() {
-        return no_bathrooms;
-    }
-
-    public void setNo_bathrooms(Integer no_bathrooms) {
-        this.no_bathrooms = no_bathrooms;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
 }

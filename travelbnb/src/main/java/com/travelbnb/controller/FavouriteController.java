@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/favourite")
 public class FavouriteController {
@@ -26,5 +28,12 @@ public class FavouriteController {
     {
         FavouriteDto favouriteDto = favorite.addFavourites(user, dto, propertyId);
         return new ResponseEntity<>(favouriteDto, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/allFavorites")
+    public ResponseEntity<?> getAllFavouritesByUser(
+            @AuthenticationPrincipal User user){
+        List<FavouriteDto> favourtesByUser = favorite.getAllFavourtesByUser(user);
+        return new ResponseEntity<>(favourtesByUser, HttpStatus.OK);
     }
 }

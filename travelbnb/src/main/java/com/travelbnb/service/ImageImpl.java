@@ -8,6 +8,7 @@ import com.travelbnb.repository.PropertyRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 @Service
 public class ImageImpl implements ImageService{
@@ -30,14 +31,20 @@ public class ImageImpl implements ImageService{
             Image image = new Image();
             image.setImageUrl(imageUrl);
             image.setProperty(property.get());
-            imageRepository.save(image);
+            final Image save = imageRepository.save(image);
             ImageDto imageDto = new ImageDto();
-            imageDto.setId(image.getId());
-            imageDto.setImageUrl(image.getImageUrl());
-            imageDto.setProperty_id(image.getProperty().getId());
+            imageDto.setId(save.getId());
+            imageDto.setImageUrl(save.getImageUrl());
+            imageDto.setProperty_id(save.getProperty().getId());
             return imageDto;
         }
 
         return null;
+    }
+
+    @Override
+    public List<String> getImagesByPropertyId(Long propertyId) {
+        List<Image> all = imageRepository.findAllByPropertyId(propertyId);
+        return all.stream().map(Image::getImageUrl).toList();
     }
 }

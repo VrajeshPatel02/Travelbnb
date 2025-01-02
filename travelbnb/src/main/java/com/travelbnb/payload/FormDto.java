@@ -2,6 +2,8 @@ package com.travelbnb.payload;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class FormDto {
     private Long id;
@@ -12,5 +14,7 @@ public class FormDto {
     private Integer price;
     private String country;
     private String location;
-    private String image_url;
+    private String description;
+    private List<ImageDto> image_url;
+    private UserDto user;
 }

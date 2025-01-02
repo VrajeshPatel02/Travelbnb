@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Input from "../../components/ui/Input";
@@ -15,10 +15,10 @@ const Properties: React.FC = () => {
     numberOfBathrooms: "",
     price: "",
     description: "",
-    image: null as File | null,
+    images: [] as File[],
   });
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -30,14 +30,24 @@ const Properties: React.FC = () => {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
-      setFormData({
-        ...formData,
-        image: file,
-      });
-      setImagePreview(URL.createObjectURL(file));
-    }
+    const files = Array.from(e.target.files || []);
+    const newImages = files.filter((file) => !formData.images.includes(file));
+
+    setFormData({
+      ...formData,
+      images: [...formData.images, ...newImages],
+    });
+
+    const newPreviews = newImages.map((file) => URL.createObjectURL(file));
+    setImagePreviews([...imagePreviews, ...newPreviews]);
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = formData.images.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+
+    setFormData({ ...formData, images: newImages });
+    setImagePreviews(newPreviews);
   };
 
   const resetForm = () => {
@@ -50,28 +60,30 @@ const Properties: React.FC = () => {
       numberOfBathrooms: "",
       price: "",
       description: "",
-      image: null,
+      images: [],
     });
-    setImagePreview(null);
+    setImagePreviews([]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.image) {
+    if (formData.images.length === 0) {
       toast({
-        description: "Please upload an image.",
+        description: "Please upload at least one image.",
       });
       return;
     }
-    
+
     if (loading) return;
 
     setLoading(true);
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("file", formData.image);
+      formData.images.forEach((image, index) =>
+        formDataToSend.append(`file[${index}]`, image)
+      );
       formDataToSend.append("name", formData.propertyName);
       formDataToSend.append("noGuests", formData.numberOfGuests);
       formDataToSend.append("no_bedrooms", formData.numberOfBedrooms);
@@ -106,26 +118,7 @@ const Properties: React.FC = () => {
     }
   };
 
-  const handleImageUpload = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = (e: Event) => {
-      const target = e.target as HTMLInputElement;
-      const file = target.files?.[0] || null;
-      if (file) {
-        setFormData({
-          ...formData,
-          image: file,
-        });
-        setImagePreview(URL.createObjectURL(file));
-      }
-    };
-    input.click();
-  };
-
   return (
-    
     <form
       onSubmit={handleSubmit}
       className="w-full max-w-lg mx-auto p-8 bg-white rounded-lg shadow"
@@ -197,47 +190,41 @@ const Properties: React.FC = () => {
 
       <div className="mb-5">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Upload Image
+          Upload Images
         </label>
-        <div
-          className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center"
-          onDrop={(e) => {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            if (file) {
-              setFormData({ ...formData, image: file });
-              setImagePreview(URL.createObjectURL(file));
-            }
-          }}
-          onDragOver={(e) => e.preventDefault()}
-        >
-          {imagePreview ? (
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="h-40 object-cover"
-            />
-          ) : (
-            <p className="text-gray-500">
-              Drag and drop an image here, or click to upload
-            </p>
-          )}
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleImageChange}
+          className="mb-4"
+        />
+        <div className="grid grid-cols-3 gap-4">
+          {imagePreviews.map((preview, index) => (
+            <div key={index} className="relative">
+              <img
+                src={preview}
+                alt={`Preview ${index + 1}`}
+                className="h-24 w-full object-cover rounded"
+              />
+              <button
+                type="button"
+                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                onClick={() => removeImage(index)}
+              >
+                ×
+              </button>
+            </div>
+          ))}
         </div>
       </div>
 
       <button
-        type="button"
-        onClick={handleImageUpload}
-        className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 mb-4"
-      >
-        Upload Image
-      </button>
-
-      <button
         type="submit"
         className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600"
+        disabled={loading}
       >
-        Submit
+        {loading ? "Submitting..." : "Submit"}
       </button>
     </form>
   );

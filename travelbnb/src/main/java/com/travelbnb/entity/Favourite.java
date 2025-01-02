@@ -6,6 +6,8 @@ import lombok.Setter;
 
 
 @Entity
+@Getter
+@Setter
 @Table(name = "favourite")
 public class Favourite {
     @Id
@@ -23,37 +25,4 @@ public class Favourite {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
-    public Property getProperty() {
-        return property;
-    }
-
-    public void setProperty(Property property) {
-        this.property = property;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
 }

@@ -1,21 +1,15 @@
 package com.travelbnb.service;
-import com.travelbnb.entity.Country;
-import com.travelbnb.entity.Image;
-import com.travelbnb.entity.Location;
-import com.travelbnb.entity.Property;
-import com.travelbnb.payload.FormDto;
-import com.travelbnb.payload.ImageDto;
-import com.travelbnb.payload.PropertyDto;
-import com.travelbnb.repository.CountryRepository;
-import com.travelbnb.repository.ImageRepository;
-import com.travelbnb.repository.LocationRepository;
-import com.travelbnb.repository.PropertyRepository;
+import com.travelbnb.entity.*;
+import com.travelbnb.payload.*;
+import com.travelbnb.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,32 +17,28 @@ import java.util.stream.Collectors;
 @Service
 public class PropertyImpl implements PropertyService{
 
-    private PropertyRepository propertyRepository;
-    private CountryRepository countryRepository;
-    private LocationRepository locationRepository;
-    private ImageRepository imageRepository;
-    private ImageService imageService;
+    final private PropertyRepository propertyRepository;
+    final private CountryRepository countryRepository;
+    final private LocationRepository locationRepository;
+    final private ImageRepository imageRepository;
+    final private ImageService imageService;
+    final private FavouriteRepository favouriteRepository;
+    final private UserEntityRepository userRepository;
 
-    public PropertyImpl(PropertyRepository propertyRepository, CountryRepository countryRepository, LocationRepository locationRepository, ImageRepository imageRepository, ImageService imageService) {
+    public PropertyImpl(PropertyRepository propertyRepository, CountryRepository countryRepository, LocationRepository locationRepository, ImageRepository imageRepository, ImageService imageService, FavouriteRepository favouriteRepository, UserEntityRepository userRepository) {
         this.propertyRepository = propertyRepository;
         this.countryRepository = countryRepository;
         this.locationRepository = locationRepository;
         this.imageRepository = imageRepository;
         this.imageService = imageService;
+        this.favouriteRepository = favouriteRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public List<PropertyDto> searchProperty(String name, int pageSize, int pageNo, String sortBy, String sortDir) {
-        PageRequest pageable = null;
-        if(sortDir.equalsIgnoreCase("asc")){
-            pageable = PageRequest.of(pageNo,pageSize, Sort.by(sortBy).ascending());
-        }else if(sortDir.equalsIgnoreCase("desc")){
-            pageable = PageRequest.of(pageNo,pageSize, Sort.by(sortBy).descending());
-        }
-        Page<Property> allprop = propertyRepository.searchProperty(name,pageable);
-        List<Property> pue = allprop.getContent();
-        List<PropertyDto> pud =pue.stream().map( p-> EntityToDto(p)).collect(Collectors.toList());
-        return pud;
+    public List<PropertyDto> searchProperty(String name) {
+        List<Property> properties = propertyRepository.searchProperty(name);
+        return properties.stream().map(this::EntityToDto).collect(Collectors.toList());
     }
     @Override
     public PropertyDto addProperty(PropertyDto pdto, long countryId, long locationId) {
@@ -101,7 +91,7 @@ public class PropertyImpl implements PropertyService{
         entity.setPrice(pdto.getPrice());
         return entity;
     }
-    public PropertyDto EntityToDto(Property entity){
+    public PropertyDto EntityToDto(Property entity,User user) {
         PropertyDto pdto = new PropertyDto();
         pdto.setId(entity.getId());
         pdto.setName(entity.getName());
@@ -109,20 +99,55 @@ public class PropertyImpl implements PropertyService{
         pdto.setNo_bedrooms(entity.getNo_bedrooms());
         pdto.setNo_bathrooms(entity.getNo_bathrooms());
         pdto.setPrice(entity.getPrice());
-        pdto.setCountry(entity.getCountry().getId());
-        pdto.setLocation(entity.getLocation().getId());
-
-        Optional<Image> byId = imageRepository.findByPropertyId(entity.getId());
-        if (byId.isPresent()){
-            pdto.setImage_url(byId.get().getImageUrl());
-        }else {
-            pdto.setImage_url("");
+        pdto.setCountry(entity.getCountry().getName());
+        pdto.setLocation(entity.getLocation().getName());
+        pdto.setDescription(entity.getDescription());
+        pdto.setAvgRating(5);
+        List<Image> images = imageRepository.findAllByPropertyId(entity.getId());
+        if (!images.isEmpty()) {
+            List<String> imageUrls = images.stream()
+                    .map(Image::getImageUrl) // Extract URLs from the Image entity
+                    .collect(Collectors.toList());
+            pdto.setImageUrl(imageUrls); // Set the list of URLs
+        } else {
+            pdto.setImageUrl(Collections.emptyList()); // Set an empty list if no images are found
+        }
+        if(user != null) {
+            pdto.setIsFavorite(favouriteRepository.findFavourites(user.getId(), entity.getId()).getStatus()); // Set the favorite status based on the user's favorites'
+        } else {
+            pdto.setIsFavorite(false); // Set the favorite status as false if the user is not logged in
         }
         return pdto;
     }
 
+    public PropertyDto EntityToDto(Property entity) {
+        PropertyDto pdto = new PropertyDto();
+        pdto.setId(entity.getId());
+        pdto.setName(entity.getName());
+        pdto.setNoGuests(entity.getNoGuests());
+        pdto.setNo_bedrooms(entity.getNo_bedrooms());
+        pdto.setNo_bathrooms(entity.getNo_bathrooms());
+        pdto.setPrice(entity.getPrice());
+        pdto.setCountry(entity.getCountry().getName());
+        pdto.setLocation(entity.getLocation().getName());
+        pdto.setDescription(entity.getDescription());
+        pdto.setAvgRating(5);
+        List<Image> images = imageRepository.findAllByPropertyId(entity.getId());
+        if (!images.isEmpty()) {
+            List<String> imageUrls = images.stream()
+                    .map(Image::getImageUrl) // Extract URLs from the Image entity
+                    .collect(Collectors.toList());
+            pdto.setImageUrl(imageUrls); // Set the list of URLs
+        } else {
+            pdto.setImageUrl(Collections.emptyList()); // Set an empty list if no images are found
+        }
+        pdto.setIsFavorite(false); // Set the favorite status as false if the user is not logged in
+        return pdto;
+    }
+
+
     @Override
-    public List<PropertyDto> getAll(int pageSize, int pageNo, String sortBy, String sortDir) {
+    public Page<PropertyDto> getAll(int pageSize, int pageNo, String sortBy, String sortDir, User user) {
         PageRequest pageable = null;
         if(sortDir.equalsIgnoreCase("asc")){
             pageable = PageRequest.of(pageNo,pageSize, Sort.by(sortBy).ascending());
@@ -132,21 +157,26 @@ public class PropertyImpl implements PropertyService{
         assert pageable != null;
         Page<Property> all = propertyRepository.findAll(pageable);
         List<Property> content = all.getContent();
-        return all.stream().map(this::EntityToDto).collect(Collectors.toList());
+        return all.map(p->EntityToDto(p, user));
     }
 
     @Override
-    public FormDto addNewProperty(FormDto fdto, MultipartFile file) {
-        if(verifyCountry(fdto.getCountry()) == null) {
+    public FormDto addNewProperty(FormDto fdto, MultipartFile[] files, User user) {
+        // Verify and save the country if it does not exist
+        if (verifyCountry(fdto.getCountry()) == null) {
             Country country = new Country();
             country.setName(fdto.getCountry());
             countryRepository.save(country);
         }
-        if(verifyLocation(fdto.getLocation()) == null) {
+
+        // Verify and save the location if it does not exist
+        if (verifyLocation(fdto.getLocation()) == null) {
             Location location = new Location();
             location.setName(fdto.getLocation());
             locationRepository.save(location);
         }
+
+        // Create and save a new property
         Property property = new Property();
         property.setName(fdto.getName());
         property.setNoGuests(fdto.getNoGuests());
@@ -155,7 +185,11 @@ public class PropertyImpl implements PropertyService{
         property.setPrice(fdto.getPrice());
         property.setCountry(verifyCountry(fdto.getCountry()));
         property.setLocation(verifyLocation(fdto.getLocation()));
+        property.setDescription(fdto.getDescription());
+        property.setUser(user);
         Property savedProperty = propertyRepository.save(property);
+
+        // Create a DTO to return
         FormDto formDto = new FormDto();
         formDto.setId(savedProperty.getId());
         formDto.setName(savedProperty.getName());
@@ -165,12 +199,22 @@ public class PropertyImpl implements PropertyService{
         formDto.setPrice(savedProperty.getPrice());
         formDto.setCountry(savedProperty.getCountry().getName());
         formDto.setLocation(savedProperty.getLocation().getName());
-        if(file!= null) {
-            final String image = imageService.uploadImageFile(file, "travelbnb123", savedProperty.getId()).getImageUrl();
-            formDto.setImage_url(image);
+        formDto.setDescription(savedProperty.getDescription());
+        formDto.setUser(new UserDto(user.getId(), user.getName(), user.getUsername(), user.getEmail(), user.getRole())); // Map only required fields
+
+        // Handle file uploads and map to image DTOs
+        if (files != null && files.length > 0) {
+            List<ImageDto> imageDtos = new ArrayList<>();
+            for (MultipartFile file : files) {
+                ImageDto imageDto = imageService.uploadImageFile(file, "travelbnb123", savedProperty.getId());
+                imageDtos.add(imageDto);
+            }
+            formDto.setImage_url(imageDtos);
         }
+
         return formDto;
     }
+
 
     public Country verifyCountry(String country_name){
         Optional<Country> byName = countryRepository.findByName(country_name);
@@ -181,5 +225,12 @@ public class PropertyImpl implements PropertyService{
         Optional<Location> byName = locationRepository.findByName(location_name);
         return byName.orElse(null);
     }
-
+    public PropertyDto getPropertyById(Long id) {
+        Optional<Property> property = propertyRepository.findById(id);
+        if(property.isPresent()){
+            return EntityToDto(property.get());
+        }else{
+            throw( new RuntimeException("Property not found with ID: " + id));
+        }
+    }
 }

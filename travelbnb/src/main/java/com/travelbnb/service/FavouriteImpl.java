@@ -8,11 +8,14 @@ import com.travelbnb.repository.FavouriteRepository;
 import com.travelbnb.repository.PropertyRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 
 public class FavouriteImpl implements FavouriteService{
-    private FavouriteRepository favouriteRepository;
-    private PropertyRepository propertyRepository;
+    private final FavouriteRepository favouriteRepository;
+    private final PropertyRepository propertyRepository;
 
     public FavouriteImpl(FavouriteRepository favouriteRepository, PropertyRepository propertyRepository) {
         this.favouriteRepository = favouriteRepository;
@@ -22,17 +25,14 @@ public class FavouriteImpl implements FavouriteService{
     @Override
     public FavouriteDto addFavourites(User user, FavouriteDto dto, long propertyId) {
         Favourite entity = DtoToEntity(dto);
-        Property property = (propertyRepository.findById(propertyId)).get();
-        entity.setProperty(property);
-        entity.setUser(user);
-        favouriteRepository.save(entity);
-        return EntityToDto(entity);
-    }
-
-    @Override
-    public FavouriteDto getAllFavouritesByUser(User user, int pageSize, int pageNo, String sortBy, String sortDir) {
-
-        return null;
+        final Optional<Property> opProperty = propertyRepository.findById(propertyId);
+        if (opProperty.isPresent()) {
+            entity.setProperty(opProperty.get());
+            entity.setUser(user);
+            Favourite save = favouriteRepository.save(entity);
+            return EntityToDto(save);
+        }
+        return null;    
     }
 
     public Favourite DtoToEntity(FavouriteDto dto) {
@@ -48,5 +48,10 @@ public class FavouriteImpl implements FavouriteService{
         dto.setProperty(entity.getProperty().getId());
         dto.setUser(entity.getUser().getId());
         return dto;
+    }
+    @Override
+    public List<FavouriteDto> getAllFavourtesByUser(User user){
+        List<Favourite> allFavorites = favouriteRepository.findAllByUserId(user.getId());
+        return allFavorites.stream().map(this::EntityToDto).toList();
     }
 }

@@ -64,14 +64,14 @@ public class UserImpl implements UserService{
     @Override
     public JWTTokenDto verifyUser(LoginDto loginDto){
         Optional<User> opUser = userRepository.findByUsername(loginDto.getUsername());
-        User appUser = opUser.get();
         if(opUser.isPresent()){
-            if(BCrypt.checkpw(loginDto.getPassword(), appUser.getPassword())){
-                String token = jwtService.generateToken(appUser);
+            if(BCrypt.checkpw(loginDto.getPassword(), opUser.get().getPassword())){
+                final User user = opUser.get();
+                String token = jwtService.generateToken(user);
                 JWTTokenDto jwtTokenDto = new JWTTokenDto();
                 jwtTokenDto.setType("JWT Token");
                 jwtTokenDto.setToken(token);
-                jwtTokenDto.setUserName(appUser.getUsername());
+                jwtTokenDto.setUser(new UserDto(user.getId(), user.getName(),user.getUsername(), user.getEmail(), user.getRole()));
                 return jwtTokenDto;
             }
         }
