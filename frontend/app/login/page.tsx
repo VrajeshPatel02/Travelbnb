@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoginRequest } from "../../types/auth";
-import { authService } from "../../services/authService";
+import { authService } from "@/services/authService";
 import Input from "../../components/ui/Input"; // Import the new Input component
 
 const LoginPage = () => {

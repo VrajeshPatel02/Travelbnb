@@ -1,9 +1,9 @@
 'use client'
-import PropertyCard from '@/app/components/Cards';
-import Navbar from '@/app/components/Navbar';
-import { Button } from '@/app/components/ui/button';
-import api from '@/app/services/authService';
-import { Property } from '@/app/types/property';
+import PropertyCard from '@/components/Cards';
+import Navbar from '@/components/Navbar';
+import { Button } from '@/components/ui/button';
+import api from '@/services/authService';
+import { Property } from '@/types/property';
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 
 const Dashboard = () => {

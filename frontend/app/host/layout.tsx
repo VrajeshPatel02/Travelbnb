@@ -1,4 +1,4 @@
-import HostLayout from "../components/HostLayout";
+import HostLayout from "../../components/HostLayout";
 
 export default function RootLayout({
   children,
@@ -6,9 +6,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    
-        <HostLayout>
-          {children}
-        </HostLayout>
+
+    <HostLayout>
+      {children}
+    </HostLayout>
   );
 }

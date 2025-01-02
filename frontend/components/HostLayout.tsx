@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Toaster } from "../components/ui/toaster";
+import { Toaster } from "./ui/toaster";
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -24,7 +24,7 @@ const HostLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     useEffect(() => {
         switch (selectedKey) {
             case 'properties':
-                <HostPropertyCard/>;
+                <HostPropertyCard />;
                 break;
             case 'reviews':
                 <h1>Reviews</h1>;

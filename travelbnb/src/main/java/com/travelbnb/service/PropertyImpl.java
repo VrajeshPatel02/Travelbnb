@@ -116,7 +116,12 @@ public class PropertyImpl implements PropertyService{
             pdto.setImageUrl(Collections.emptyList()); // Set an empty list if no images are found
         }
         if(user != null) {
-            pdto.setIsFavorite(favouriteRepository.findFavourites(user.getId(), entity.getId()).getStatus()); // Set the favorite status based on the user's favorites'
+            Optional<Favourite> favourites = favouriteRepository.findFavourites(user.getId(), entity.getId());
+            if(favourites.isPresent()){
+                pdto.setIsFavorite(favourites.get().getStatus());
+            }else {
+                pdto.setIsFavorite(false);
+            }
         } else {
             pdto.setIsFavorite(false); // Set the favorite status as false if the user is not logged in
         }

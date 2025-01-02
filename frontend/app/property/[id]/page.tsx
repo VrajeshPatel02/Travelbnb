@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import api from "@/app/services/authService";
-import { Property } from "@/app/types/property";
+import api from "@/services/authService";
+import { Property } from "@/types/property";
 
 const PropertyDetails = () => {
   const { id } = useParams(); // Fetch property ID from the URL

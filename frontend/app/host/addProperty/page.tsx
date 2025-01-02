@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import Input from "../../components/ui/Input";
-import api from "@/app/services/authService";
+import Input from "../../../components/ui/Input";
+import api from "@/services/authService";
 
 const Properties: React.FC = () => {
   const { toast } = useToast();
