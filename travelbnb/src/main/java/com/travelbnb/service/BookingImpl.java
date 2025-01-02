@@ -31,6 +31,8 @@ public class BookingImpl implements BookingService{
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    @Value("${pdf.storage.path}")
+    private String pdfFilePath;
 
     public BookingImpl(BookingRepository bookingRepository, PropertyRepository propertyRepository, UserEntityRepository userRepository, PDFService pdfService, BucketService bucketService, SmsService smsService, WhatsappService whatsappService) {
         this.bookingRepository = bookingRepository;
@@ -58,7 +60,7 @@ public class BookingImpl implements BookingService{
             try {
                 boolean b = pdfService.generatePDF(booking.getId().toString(), booking);
                 if(b) {
-                    MultipartFile file = BookingConverter("C://Users//Keval//pdf_example//"+"Booking-Confirmation-id"+ booking.getId().toString() +".pdf");
+                    MultipartFile file = BookingConverter(pdfFilePath+"Booking-Confirmation-id"+ booking.getId().toString() +".pdf");
                     String uploadedFileUrl = bucketService.uploadFile(file,bucketName);
                     String smsId = smsService.sendSms(booking.getMobile(), "Your booking has been confirmed with the confirmation link: " + uploadedFileUrl);
                     String whatappId = whatsappService.sendWhatsappMessage(booking.getMobile(), "Your booking has been confirmed with the confirmation link" + uploadedFileUrl);
