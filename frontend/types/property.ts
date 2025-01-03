@@ -8,7 +8,9 @@ export interface Property {
   country: number;
   location: number;
   description: string;
-  image_url: string;
+  imageUrl: string[];
+  avgRating: number;
+  isFavorite: boolean;
 }
 
 export interface PropertyApiResponse {

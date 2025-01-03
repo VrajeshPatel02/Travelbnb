@@ -17,8 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/Input";
-import { Toast } from "@/components/ui/toast";
-
+import { useToast } from "@/hooks/use-toast"
 const loginSchema = z.object({
   username: z.string().min(1, {
     message: "Username is required",
@@ -41,6 +40,7 @@ const LoginForm = () => {
       password: "",
     },
   });
+  const { toast } = useToast();
 
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true);

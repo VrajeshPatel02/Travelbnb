@@ -3,6 +3,7 @@ import PropertyCard from '@/components/Cards';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import api from '@/services/authService';
+import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 
@@ -21,11 +22,11 @@ const Dashboard = () => {
     
     setIsLoading(true);
     try {
-      const response = await api.get(`/property/allProperties?pageNo=${page}&pageSize=3`);
-      const newContent = response.data.content;
+      const response = await propertyService.getAllProperties(page);
+      console.log(response);
       
       // Update hasMore based on whether we received any new content
-      if (newContent.length === 0) {
+      if (response.length === 0) {
         setHasMore(false);
         return;
       }
@@ -34,7 +35,7 @@ const Dashboard = () => {
         // Create a map of existing IDs for efficient lookup
         const existingIds = new Set(prevProperties.map(p => p.id));
         // Filter out any properties that already exist
-        const uniqueNewProperties = newContent.filter(
+        const uniqueNewProperties = response.filter(
           (prop: Property) => !existingIds.has(prop.id)
         );
         return [...prevProperties, ...uniqueNewProperties];
@@ -96,7 +97,7 @@ const Dashboard = () => {
           <div className="text-center text-gray-500">Loading properties...</div>
         )}
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {displayProperties.map((property) => (
             <PropertyCard 
               key={property.id}
