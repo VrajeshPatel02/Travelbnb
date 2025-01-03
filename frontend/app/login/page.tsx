@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoginRequest } from "../../types/auth";
 import { authService } from "@/services/authService";
-import Input from "../../components/ui/Input"; // Import the new Input component
+import { Input } from "@/components/ui/Input"; // Import the new Input component
 
 const LoginPage = () => {
   const router = useRouter();
@@ -67,7 +67,7 @@ const LoginPage = () => {
     setIsLoading(true);
     try {
       const loginResponse = await authService.login(formData);
-      router.push("/pages/dashboard");
+      router.push("/dashboard");
     } catch (error) {
       if (error instanceof Error && error.message.includes("401")) {
         // Handle login error
@@ -95,7 +95,7 @@ const LoginPage = () => {
                   placeholder="Username"
                   value={formData.username}
                   onChange={handleChange}
-                  error={errors.username}
+                  
                   disabled={isLoading}
                 />
                 <Input
@@ -104,14 +104,13 @@ const LoginPage = () => {
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
-                  error={errors.password}
+                  
                   disabled={isLoading}
                 />
                 <button
                   type="submit"
-                  className={`mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none ${
-                    isLoading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className={`mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                   disabled={isLoading}
                 >
                   {isLoading ? "Logging in..." : "Log in"}
@@ -121,7 +120,7 @@ const LoginPage = () => {
                 Dont have an account?{" "}
                 <button
                   className="border-b border-gray-500 border-dotted"
-                  onClick={() => router.push("/pages/sign-up")}
+                  onClick={() => router.push("/sign-up")}
                 >
                   Sign up here
                 </button>

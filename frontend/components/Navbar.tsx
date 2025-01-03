@@ -70,7 +70,7 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
         authService.logout();
         setIsAuthenticated(false);
         setUserDetails(null);
-        window.location.href = "/pages/login";
+        window.location.href = "/login";
     };
 
     const getAvatarUrl = (username: string) => {
@@ -129,13 +129,13 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
                     ) : (
                         <>
                             <a
-                                href="/pages/sign-up"
+                                href="/sign-up"
                                 className="hidden sm:inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm transition-all duration-150 hover:bg-gray-100"
                             >
                                 Sign Up
                             </a>
                             <a
-                                href="/pages/login"
+                                href="/login"
                                 className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all duration-150 hover:bg-blue-500"
                             >
                                 Login
