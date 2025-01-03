@@ -1,40 +1,22 @@
-import React from "react";
+import * as React from "react"
 
-interface InputProps {
-  type: string;
-  name: string;
-  placeholder: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string;
-  disabled?: boolean;
-}
+import { cn } from "@/lib/utils"
 
-const Input: React.FC<InputProps> = ({
-  type,
-  name,
-  placeholder,
-  value,
-  onChange,
-  error,
-  disabled = false,
-}) => {
-  return (
-    <div className="w-full mb-5">
+const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
+  ({ className, type, ...props }, ref) => {
+    return (
       <input
-        className={`w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border ${
-          error ? "border-red-500" : "border-gray-200"
-        } placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white`}
         type={type}
-        name={name}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
+        className={cn(
+          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+          className
+        )}
+        ref={ref}
+        {...props}
       />
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-    </div>
-  );
-};
+    )
+  }
+)
+Input.displayName = "Input"
 
-export default Input;
+export { Input }
