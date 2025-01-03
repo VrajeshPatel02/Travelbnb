@@ -31,7 +31,7 @@ public class UserImpl implements UserService{
         UserDto dto = new UserDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
-        dto.setUsername(entity.getUsername());
+        dto.setUsername(entity.getUsername());  
         dto.setEmail(entity.getEmail());
         dto.setPassword(entity.getPassword());
         dto.setRole(entity.getRole());
