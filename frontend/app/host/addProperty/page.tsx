@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from '@/components/ui/Input';
@@ -7,12 +8,12 @@ import api from "@/services/authService";
 const Properties: React.FC = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
+    name: "", 
     location: "",
     country: "",
-    propertyName: "",
-    numberOfGuests: "",
-    numberOfBedrooms: "",
-    numberOfBathrooms: "",
+    noGuests: "",  
+    no_bedrooms: "", 
+    no_bathrooms: "", 
     price: "",
     description: "",
     images: [] as File[],
@@ -30,7 +31,9 @@ const Properties: React.FC = () => {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+    if (!e.target.files?.length) return;
+    
+    const files = Array.from(e.target.files);
     const newImages = files.filter((file) => !formData.images.includes(file));
 
     setFormData({
@@ -52,12 +55,12 @@ const Properties: React.FC = () => {
 
   const resetForm = () => {
     setFormData({
+      name: "",
       location: "",
       country: "",
-      propertyName: "",
-      numberOfGuests: "",
-      numberOfBedrooms: "",
-      numberOfBathrooms: "",
+      noGuests: "",
+      no_bedrooms: "",
+      no_bathrooms: "",
       price: "",
       description: "",
       images: [],
@@ -71,6 +74,16 @@ const Properties: React.FC = () => {
     if (formData.images.length === 0) {
       toast({
         description: "Please upload at least one image.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Basic validation
+    if (!formData.name || !formData.location || !formData.country) {
+      toast({
+        description: "Please fill in all required fields.",
+        variant: "destructive"
       });
       return;
     }
@@ -81,17 +94,18 @@ const Properties: React.FC = () => {
 
     try {
       const formDataToSend = new FormData();
-      formData.images.forEach((image, index) =>
-        formDataToSend.append(`file[${index}]`, image)
-      );
-      formDataToSend.append("name", formData.propertyName);
-      formDataToSend.append("noGuests", formData.numberOfGuests);
-      formDataToSend.append("no_bedrooms", formData.numberOfBedrooms);
-      formDataToSend.append("no_bathrooms", formData.numberOfBathrooms);
-      formDataToSend.append("price", formData.price);
-      formDataToSend.append("country", formData.country);
-      formDataToSend.append("location", formData.location);
-      formDataToSend.append("description", formData.description);
+      
+      // Append all form fields
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key !== 'images') {
+          formDataToSend.append(key, value.toString());
+        }
+      });
+
+      // Append images
+      formData.images.forEach((image, index) => {
+        formDataToSend.append(`file`, image); 
+      });
 
       const response = await api.post("/property/addNewProperty", formDataToSend, {
         headers: {
@@ -126,10 +140,21 @@ const Properties: React.FC = () => {
       <h1 className="text-2xl font-bold mb-6">Add Property</h1>
       <Input
         type="text"
+        name="name"
+        placeholder="Property Name"
+        value={formData.name}
+        onChange={handleInputChange}
+        required
+        className="mb-4"
+      />
+      <Input
+        type="text"
         name="location"
         placeholder="Location"
         value={formData.location}
         onChange={handleInputChange}
+        required
+        className="mb-4"
       />
       <Input
         type="text"
@@ -137,34 +162,35 @@ const Properties: React.FC = () => {
         placeholder="Country"
         value={formData.country}
         onChange={handleInputChange}
-      />
-      <Input
-        type="text"
-        name="propertyName"
-        placeholder="Property Name"
-        value={formData.propertyName}
-        onChange={handleInputChange}
+        required
+        className="mb-4"
       />
       <Input
         type="number"
-        name="numberOfGuests"
+        name="noGuests"
         placeholder="Number of Guests"
-        value={formData.numberOfGuests}
+        value={formData.noGuests}
         onChange={handleInputChange}
+        required
+        className="mb-4"
       />
       <Input
         type="number"
-        name="numberOfBedrooms"
+        name="no_bedrooms"
         placeholder="Number of Bedrooms"
-        value={formData.numberOfBedrooms}
+        value={formData.no_bedrooms}
         onChange={handleInputChange}
+        required
+        className="mb-4"
       />
       <Input
         type="number"
-        name="numberOfBathrooms"
+        name="no_bathrooms"
         placeholder="Number of Bathrooms"
-        value={formData.numberOfBathrooms}
+        value={formData.no_bathrooms}
         onChange={handleInputChange}
+        required
+        className="mb-4"
       />
       <Input
         type="number"
@@ -172,6 +198,8 @@ const Properties: React.FC = () => {
         placeholder="Price"
         value={formData.price}
         onChange={handleInputChange}
+        required
+        className="mb-4"
       />
 
       <div className="mb-5">
@@ -185,6 +213,7 @@ const Properties: React.FC = () => {
           onChange={handleInputChange}
           className="w-full p-2 border rounded-lg"
           rows={4}
+          required
         ></textarea>
       </div>
 
@@ -198,6 +227,7 @@ const Properties: React.FC = () => {
           accept="image/*"
           onChange={handleImageChange}
           className="mb-4"
+          required
         />
         <div className="grid grid-cols-3 gap-4">
           {imagePreviews.map((preview, index) => (
@@ -221,7 +251,7 @@ const Properties: React.FC = () => {
 
       <button
         type="submit"
-        className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600"
+        className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 disabled:opacity-50"
         disabled={loading}
       >
         {loading ? "Submitting..." : "Submit"}
