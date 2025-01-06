@@ -13,11 +13,11 @@ class PropertyService {
     }
   }
 
-  async getAllProperties(): Promise<Property[]> {
+  async getAllProperties(pageNo: number): Promise<Property[]> {
 
     try {
       // Fetching data with explicit response type
-      const response = await api.get<PropertyApiResponse>("/property/allProperties");
+      const response = await api.get<PropertyApiResponse>(`/property/allProperties?pageNo=${pageNo}`);
       console.log(response.data)
       // Validate API structure
       if (!response.data?._embedded?.propertyDtoList) {

@@ -41,6 +41,7 @@ const LoginForm = () => {
       password: "",
     },
   });
+  const { toast } = useToast();
 
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true);
