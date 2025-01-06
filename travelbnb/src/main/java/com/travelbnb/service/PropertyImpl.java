@@ -236,7 +236,10 @@ public class PropertyImpl implements PropertyService{
     public PropertyDto getPropertyById(Long id) {
         Optional<Property> property = propertyRepository.findById(id);
         if(property.isPresent()){
-            return EntityToDto(property.get());
+            PropertyDto propertyDto = EntityToDto(property.get());
+            User user = property.get().getUser();
+            propertyDto.setUser(new UserDto(user.getId(), user.getName(),user.getUsername(),user.getEmail(),user.getRole()));
+            return propertyDto;
         }else{
             throw( new RuntimeException("Property not found with ID: " + id));
         }

@@ -17,4 +17,5 @@ public class PropertyDto {
     private List<String> imageUrl;
     private Integer avgRating;
     private Boolean isFavorite;
+    private UserDto user;
 }
