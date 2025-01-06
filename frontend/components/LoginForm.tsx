@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/Input";
-import { Toast } from "@/components/ui/toast";
+import { toast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   username: z.string().min(1, {
