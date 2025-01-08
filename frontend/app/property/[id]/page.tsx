@@ -135,7 +135,7 @@ const PropertyDetails = () => {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h2 className="text-2xl font-semibold mb-2">
-                    Entire villa hosted by John Doe
+                    Entire villa hosted by john doe 
                   </h2>
                   <p className="text-gray-600">
                     {property.noGuests} guests · {property.no_bedrooms} bedrooms · {property.no_bathrooms} bathrooms
