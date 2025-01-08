@@ -7,20 +7,37 @@ import api from "@/services/authService";
 
 const Properties: React.FC = () => {
   const { toast } = useToast();
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: "", 
+    name: "",
     location: "",
     country: "",
-    noGuests: "",  
-    no_bedrooms: "", 
-    no_bathrooms: "", 
+    noGuests: "",
+    no_bedrooms: "",
+    no_bathrooms: "",
     price: "",
     description: "",
     images: [] as File[],
+    facilities: [] as string[],
   });
 
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const facilities = [
+    { id: "wifi", label: "Wi-Fi" },
+    { id: "parking", label: "Parking" },
+    { id: "pool", label: "Swimming Pool" },
+    { id: "gym", label: "Gym" },
+    { id: "ac", label: "Air Conditioning" },
+    { id: "heating", label: "Heating" },
+    { id: "kitchen", label: "Kitchen" },
+    { id: "tv", label: "TV" },
+    { id: "washer", label: "Washer" },
+    { id: "dryer", label: "Dryer" },
+    { id: "workspace", label: "Workspace" },
+    { id: "bbq", label: "BBQ Grill" },
+  ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -28,6 +45,15 @@ const Properties: React.FC = () => {
       ...formData,
       [name]: value,
     });
+  };
+
+  const handleFacilityChange = (facilityId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      facilities: prev.facilities.includes(facilityId)
+        ? prev.facilities.filter(id => id !== facilityId)
+        : [...prev.facilities, facilityId]
+    }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,30 +90,37 @@ const Properties: React.FC = () => {
       price: "",
       description: "",
       images: [],
+      facilities: [],
     });
     setImagePreviews([]);
+    setStep(1);
+  };
+
+  const validateStep1 = () => {
+    if (!formData.name || !formData.location || !formData.country || 
+        !formData.noGuests || !formData.no_bedrooms || !formData.no_bathrooms || 
+        !formData.price || !formData.description || formData.images.length === 0) {
+      toast({
+        description: "Please fill in all required fields and add at least one image.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (validateStep1()) {
+      setStep(2);
+    }
+  };
+
+  const handleBack = () => {
+    setStep(1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (formData.images.length === 0) {
-      toast({
-        description: "Please upload at least one image.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Basic validation
-    if (!formData.name || !formData.location || !formData.country) {
-      toast({
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     if (loading) return;
 
     setLoading(true);
@@ -95,16 +128,21 @@ const Properties: React.FC = () => {
     try {
       const formDataToSend = new FormData();
       
-      // Append all form fields
+      // Append all form fields except facilities and images
       Object.entries(formData).forEach(([key, value]) => {
-        if (key !== 'images') {
+        if (key === 'facilities') {
+         
+          (value as string[]).forEach((facility: string) => {
+            formDataToSend.append('facilities', facility);
+          });
+        } else if (key !== 'images') {
           formDataToSend.append(key, value.toString());
         }
       });
 
       // Append images
-      formData.images.forEach((image, index) => {
-        formDataToSend.append(`file`, image); 
+      formData.images.forEach((image) => {
+        formDataToSend.append('file', image);
       });
 
       const response = await api.post("/property/addNewProperty", formDataToSend, {
@@ -132,11 +170,53 @@ const Properties: React.FC = () => {
     }
   };
 
+  if (step === 2) {
+    return (
+      <div className="w-full max-w-lg mx-auto p-8 bg-white rounded-lg shadow">
+        <h1 className="text-2xl font-bold mb-6">Select Facilities</h1>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          {facilities.map((facility) => (
+            <div key={facility.id} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id={facility.id}
+                checked={formData.facilities.includes(facility.id)}
+                onChange={() => handleFacilityChange(facility.id)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label
+                htmlFor={facility.id}
+                className="text-sm font-medium text-gray-900"
+              >
+                {facility.label}
+              </label>
+            </div>
+          ))}
+        </div>
+        
+        <div className="flex gap-4">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="flex-1 bg-gray-500 text-white py-3 rounded-lg font-medium hover:bg-gray-600"
+          >
+            Back
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="flex-1 bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 disabled:opacity-50"
+            disabled={loading}
+          >
+            {loading ? "Submitting..." : "Submit"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="w-full max-w-lg mx-auto p-8 bg-white rounded-lg shadow"
-    >
+    <form className="w-full max-w-lg mx-auto p-8 bg-white rounded-lg shadow">
       <h1 className="text-2xl font-bold mb-6">Add Property</h1>
       <Input
         type="text"
@@ -250,11 +330,11 @@ const Properties: React.FC = () => {
       </div>
 
       <button
-        type="submit"
-        className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 disabled:opacity-50"
-        disabled={loading}
+        type="button"
+        onClick={handleNext}
+        className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600"
       >
-        {loading ? "Submitting..." : "Submit"}
+        Next
       </button>
     </form>
   );
