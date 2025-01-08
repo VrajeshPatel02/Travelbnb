@@ -1,11 +1,13 @@
 import React from 'react'
-import HostPropertyCard from '../../components/HostPropertyCard'
+
+import Properties from './addProperty/page'
 
 type Props = {}
 
 const page = (props: Props) => {
   return (<>
-    {/* <HostPropertyCard/> */}
+
+    <Properties/>
     <footer className='flex justify-center items-center'><p >copyrights 2024</p></footer>
   </>
   )

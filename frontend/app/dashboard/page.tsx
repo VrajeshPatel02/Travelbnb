@@ -1,11 +1,13 @@
 'use client'
+
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import PropertyCard from '@/components/Cards';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import api from '@/services/authService';
 import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+import { Filter } from 'lucide-react';
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +16,6 @@ const Dashboard = () => {
   const [error, setError] = useState("");
   const [pageNo, setPageNo] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  // Use ref to track mounted state
   const isMounted = useRef(false);
 
   const fetchProperties = useCallback(async (page: number) => {
@@ -25,16 +26,13 @@ const Dashboard = () => {
       const response = await propertyService.getAllProperties(page);
       console.log(response);
       
-      // Update hasMore based on whether we received any new content
       if (response.length === 0) {
         setHasMore(false);
         return;
       }
 
       setProperties(prevProperties => {
-        // Create a map of existing IDs for efficient lookup
         const existingIds = new Set(prevProperties.map(p => p.id));
-        // Filter out any properties that already exist
         const uniqueNewProperties = response.filter(
           (prop: Property) => !existingIds.has(prop.id)
         );
@@ -49,7 +47,6 @@ const Dashboard = () => {
   }, [isLoading]);
 
   useEffect(() => {
-    // Only fetch on initial mount
     if (!isMounted.current) {
       isMounted.current = true;
       fetchProperties(0);
@@ -66,7 +63,6 @@ const Dashboard = () => {
 
   const handleSearch = useCallback((results: Property[] | null) => {
     setSearchResults(results);
-    // Reset pagination when searching
     if (results !== null) {
       setPageNo(0);
     }
@@ -76,18 +72,23 @@ const Dashboard = () => {
     setSearchResults(null);
   }, []);
 
-  // Determine which properties to display
   const displayProperties = searchResults || properties;
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <Navbar 
         setSearchResults={handleSearch}
         resetSearch={resetSearch}
       />
       
-      <div className="pt-24 px-6">
-        <h1 className="text-3xl font-bold m-6 text-center">Properties</h1>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-semibold text-gray-900">Explore stays</h1>
+          <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition duration-200">
+            <Filter className="w-5 h-5" />
+            <span>Filters</span>
+          </button>
+        </div>
         
         {error && (
           <div className="text-red-500 text-center mb-4">{error}</div>
@@ -97,7 +98,7 @@ const Dashboard = () => {
           <div className="text-center text-gray-500">Loading properties...</div>
         )}
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {displayProperties.map((property) => (
             <PropertyCard 
               key={property.id}
@@ -106,21 +107,21 @@ const Dashboard = () => {
           ))}
         </div>
         
-        {/* Only show Load More if we're not showing search results and have more content */}
         {!searchResults && hasMore && (
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-8">
             <Button
               onClick={handleLoadMore}
               disabled={isLoading}
-              className="px-4 py-2"
+              className="px-6 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition duration-200"
             >
               {isLoading ? 'Loading...' : 'Load More'}
             </Button>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };
 
 export default Dashboard;
+

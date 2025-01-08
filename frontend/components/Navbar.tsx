@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Search, Globe, Menu, User } from 'lucide-react';
 import api, { authService } from "../services/authService";
 
 interface NavbarProps {
@@ -78,73 +79,81 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
     };
 
     return (
-        <header className="fixed inset-x-0 top-0 z-30 mx-auto w-full max-w-screen-lg border border-gray-100 bg-white/80 py-4 shadow-lg backdrop-blur-lg md:top-6 md:rounded-3xl">
-            <div className="flex items-center justify-between px-6">
-                <a href="/" className="flex items-center">
-                    <img src="/airbnb-logo.svg" alt="Logo" className="h-8 w-auto" />
-                    <span className="sr-only">Website Title</span>
-                </a>
+        <header className="fixed inset-x-0 top-0 z-30 w-full bg-white border-b border-gray-200">
+            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16">
+                    <div className="flex-shrink-0">
+                        <a href="/" className="flex items-center">
+                            <img src="/airbnb-logo.svg" alt="Logo" className="h-8 w-auto" />
+                        </a>
+                    </div>
 
-                <label className="relative flex-1 mx-6 flex items-center bg-white border border-gray-300 py-2 px-4 rounded-full shadow-md focus-within:ring-2 focus-within:ring-gray-300">
-                    <input
-                        value={searchQuery}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Search properties"
-                        className="w-full bg-transparent outline-none px-4 text-gray-800"
-                    />
-                    <button
-                        onClick={handleSearch}
-                        disabled={isLoading}
-                        className="ml-2 px-6 py-2 bg-black border border-black text-white active:scale-95 duration-150 rounded-full transition-all disabled:opacity-70"
-                    >
-                        {isLoading ? "Searching..." : "Search"}
-                    </button>
-                </label>
-
-                <div className="flex items-center space-x-4">
-                    {isAuthenticated ? (
-                        <div className="relative dropdown-container group">
-                            <div className="relative inline-flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
-                                <img
-                                    src={getAvatarUrl(userDetails?.username || "")}
-                                    alt="Avatar"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            {/* Dropdown menu shown on hover */}
-                            <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity duration-300">
-                                <div className="text-center">
-                                    <h1 className="text-lg font-bold">{userDetails?.username}</h1>
-                                    <p className="text-gray-600">{userDetails?.email}</p>
-                                </div>
-                                <button
-                                    onClick={handleLogout}
-                                    className="mt-4 w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-500"
-                                >
-                                    Logout
-                                </button>
-                            </div>
+                    <div className="hidden md:block flex-1 max-w-md mx-auto">
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={handleInputChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Start your search"
+                                className="w-full py-2 pl-4 pr-12 text-sm bg-gray-100 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                            />
+                            <button
+                                onClick={handleSearch}
+                                disabled={isLoading}
+                                className="absolute inset-y-0 right-0 flex items-center justify-center w-10 h-10 text-white bg-rose-500 rounded-full hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                            >
+                                <Search className="w-5 h-5" />
+                            </button>
                         </div>
-                    ) : (
-                        <>
-                            <a
-                                href="/sign-up"
-                                className="hidden sm:inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm transition-all duration-150 hover:bg-gray-100"
+                    </div>
+
+                    <div className="flex items-center">
+                        <a href="/host/addProperty" className="hidden md:block text-sm font-medium text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-full">
+                            Become a host
+                        </a>
+                        <button className="p-2 rounded-full text-gray-700 hover:bg-gray-100">
+                            <Globe className="w-5 h-5" />
+                        </button>
+                        <div className="relative ml-3">
+                            <button
+                                onClick={() => setShowDropdown(!showDropdown)}
+                                className="flex items-center space-x-2 border border-gray-300 rounded-full p-2 hover:shadow-md transition duration-200"
                             >
-                                Sign Up
-                            </a>
-                            <a
-                                href="/login"
-                                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all duration-150 hover:bg-blue-500"
-                            >
-                                Login
-                            </a>
-                        </>
-                    )}
+                                <Menu className="w-5 h-5" />
+                                {isAuthenticated ? (
+                                    <img
+                                        src={getAvatarUrl(userDetails?.username || "")}
+                                        alt="Avatar"
+                                        className="w-7 h-7 rounded-full"
+                                    />
+                                ) : (
+                                    <User className="w-7 h-7 text-gray-500" />
+                                )}
+                            </button>
+                            {showDropdown && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                                    {isAuthenticated ? (
+                                        <>
+                                            <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                            <a href="/bookings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Bookings</a>
+                                            <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <a href="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Log in</a>
+                                            <a href="/sign-up" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign up</a>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
     );
 };
+
 export default Navbar;
+
