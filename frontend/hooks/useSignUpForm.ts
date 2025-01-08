@@ -14,6 +14,7 @@ export const useSignUpForm = () => {
       username: '',
       email: '',
       password: '',
+      role: 'ROLE_USER'
     },
   });
 
@@ -52,6 +53,7 @@ export const useSignUpForm = () => {
     setIsLoading(true);
     try {
       await authService.signUp(data);
+      console.log(data);
       router.push('/login');
     } finally {
       setIsLoading(false);

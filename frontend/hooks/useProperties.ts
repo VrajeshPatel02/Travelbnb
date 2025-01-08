@@ -11,20 +11,6 @@ export const useProperties = () => {
     const fetchProperties = async () => {
       try {
         const propertyList = await propertyService.getAllProperties(0);
-
-        // Transform the data as required
-        // const fetchedProperties: Property[] = propertyList.map((prop) => ({
-        //   id: prop.id,
-        //   name: prop.name,
-        //   image_urls: prop.image_urls,
-        //   location: prop.location,
-        //   country: prop.country,
-        //   price: prop.price,
-        //   description: prop.description,
-        //   avgRating: prop.avgRating || 0,
-        //   isFavorite: prop.isFavorite || false,
-        // }));
-
         setProperties(propertyList);
       } catch (error) {
         toast({

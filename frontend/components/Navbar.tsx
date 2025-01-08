@@ -113,7 +113,7 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
                                 />
                             </div>
                             {/* Dropdown menu shown on hover */}
-                            <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity duration-300">
+                            <div className="absolute right-0 mt-1 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity duration-300">
                                 <div className="text-center">
                                     <h1 className="text-lg font-bold">{userDetails?.username}</h1>
                                     <p className="text-gray-600">{userDetails?.email}</p>
