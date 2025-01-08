@@ -3,6 +3,7 @@ package com.travelbnb.service;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.travelbnb.entity.Booking;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -13,6 +14,10 @@ public class PDFService {
 
     private BucketService  bucketService;
 
+    @Value("${pdf.storage.path}")
+    private String pdfFilePath;
+
+
     public PDFService(BucketService bucketService) {
         this.bucketService = bucketService;
     }
@@ -20,7 +25,7 @@ public class PDFService {
     public boolean generatePDF(String filename, Booking booking) throws FileNotFoundException{
         try {
             Document document = new Document();
-            PdfWriter.getInstance(document, new FileOutputStream("C://Users//Keval//pdf_example//"+"Booking-Confirmation-id"+ filename+".pdf"));
+            PdfWriter.getInstance(document, new FileOutputStream(pdfFilePath+"Booking-Confirmation-id"+ filename+".pdf"));
 
             document.open();
             Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);

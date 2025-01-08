@@ -17,7 +17,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/Input";
-import { useToast } from "@/hooks/use-toast"
+import { toast, useToast } from "@/hooks/use-toast";
+
 const loginSchema = z.object({
   username: z.string().min(1, {
     message: "Username is required",
