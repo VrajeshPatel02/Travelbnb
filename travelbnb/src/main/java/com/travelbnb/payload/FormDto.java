@@ -2,7 +2,9 @@ package com.travelbnb.payload;
 
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class FormDto {
@@ -17,4 +19,5 @@ public class FormDto {
     private String description;
     private List<ImageDto> image_url;
     private UserDto user;
+    private Set<String> facilities;
 }

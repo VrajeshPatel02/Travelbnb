@@ -9,10 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -195,6 +192,11 @@ public class PropertyImpl implements PropertyService{
         property.setLocation(verifyLocation(fdto.getLocation()));
         property.setDescription(fdto.getDescription());
         property.setUser(user);
+
+        if (fdto.getFacilities() != null){
+            property.setFacilities(new HashSet<>(fdto.getFacilities()));
+        }
+
         Property savedProperty = propertyRepository.save(property);
 
         // Create a DTO to return
@@ -208,6 +210,7 @@ public class PropertyImpl implements PropertyService{
         formDto.setCountry(savedProperty.getCountry().getName());
         formDto.setLocation(savedProperty.getLocation().getName());
         formDto.setDescription(savedProperty.getDescription());
+        formDto.setFacilities(savedProperty.getFacilities());
         formDto.setUser(new UserDto(user.getId(), user.getName(), user.getUsername(), user.getEmail(), user.getRole())); // Map only required fields
 
         // Handle file uploads and map to image DTOs
@@ -244,4 +247,6 @@ public class PropertyImpl implements PropertyService{
             throw( new RuntimeException("Property not found with ID: " + id));
         }
     }
+
+
 }

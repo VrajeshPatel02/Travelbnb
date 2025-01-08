@@ -1,5 +1,6 @@
 package com.travelbnb.controller;
 
+import com.travelbnb.entity.Property;
 import com.travelbnb.entity.User;
 import com.travelbnb.payload.FormDto;
 import com.travelbnb.payload.PropertyDto;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.hateoas.PagedModel;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/api/v1/property", consumes = {"multipart/form-data", "application/octet-stream"})
@@ -32,7 +34,7 @@ public class PropertyController {
     @PostMapping("/addNewProperty")
     public ResponseEntity<?> addNewProperty(@ModelAttribute FormDto dto,
                                             @RequestParam("file") MultipartFile[] file,
-                                            @AuthenticationPrincipal User user){
+                                            @AuthenticationPrincipal User user) {
         FormDto saved = property.addNewProperty(dto, file, user);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -64,17 +66,18 @@ public class PropertyController {
     }
 
     @PutMapping("/updateProperty")
-    public ResponseEntity<?> updateProperty(@RequestParam PropertyDto dto){
+    public ResponseEntity<?> updateProperty(@RequestParam PropertyDto dto) {
         PropertyDto updated = property.updatePropertyDetails(dto);
-        if(updated == null){
+        if (updated == null) {
             return new ResponseEntity<>("Property not found", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
+
     @DeleteMapping("/deleteProperty")
-    public ResponseEntity<?> deleteProperty(@RequestParam Long id){
+    public ResponseEntity<?> deleteProperty(@RequestParam Long id) {
         boolean b = property.deleteProperty(id);
-        if(!b){
+        if (!b) {
             return new ResponseEntity<>("Success", HttpStatus.OK);
         }
         return new ResponseEntity<>("Property not found", HttpStatus.NOT_FOUND);
@@ -85,4 +88,5 @@ public class PropertyController {
         PropertyDto p = property.getPropertyById(id);
         return ResponseEntity.ok(p);
     }
+
 }
