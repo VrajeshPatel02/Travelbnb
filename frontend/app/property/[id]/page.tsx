@@ -61,7 +61,7 @@ const PropertyDetails = () => {
   return (
     <>
       <Navbar setSearchResults={() => {}} resetSearch={() => {}} />
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen pt-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">{property.name}</h1>
           <div className="flex items-center justify-between mb-6">

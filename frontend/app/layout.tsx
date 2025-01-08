@@ -1,4 +1,5 @@
-import { ToastContainer } from "react-toastify";
+
+import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "../contexts/AuthContext";
 import "./globals.css";
 
@@ -15,7 +16,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           {children}
-          <ToastContainer />
+          <Toaster />
         </AuthProvider>
       </body>
     </html>

@@ -1,6 +1,6 @@
 import api from './authService';
 import axios from 'axios';
-import { FavoritesRequest, FavoritesResponse, PropertyApiResponse, ApiResponse, Property } from "@/types/property";
+import { FavoritesRequest, FavoritesResponse, PropertyApiResponse, ApiResponse, Property, PaginatedProperties } from "@/types/property";
 import {handleApiError} from './errorHandler';
 
 class PropertyService {
@@ -13,23 +13,26 @@ class PropertyService {
     }
   }
 
-  async getAllProperties(pageNo: number): Promise<Property[]> {
+  
+  async getAllProperties(pageNo: number): Promise<PaginatedProperties> {
+  try {
+    const response = await api.get<PropertyApiResponse>(`/property/allProperties?pageNo=${pageNo}`);
+    console.log(response.data);
 
-    try {
-      // Fetching data with explicit response type
-      const response = await api.get<PropertyApiResponse>(`/property/allProperties?pageNo=${pageNo}`);
-      console.log(response.data)
-      // Validate API structure
-      if (!response.data?._embedded?.propertyDtoList) {
-        throw new Error("Invalid API response structure");
-      }
-
-      // Extract properties from the response
-      return response.data._embedded.propertyDtoList;
-    } catch (error) {
-      return handleApiError(error);
+    if (!response.data?._embedded?.propertyDtoList) {
+      throw new Error("Invalid API response structure");
     }
+
+    return {
+      properties: response.data._embedded.propertyDtoList,
+      totalPages: response.data.page.totalPages,
+      currentPage: response.data.page.number,
+    };
+  } catch (error) {
+    handleApiError(error);
+    return { properties: [], totalPages: 0, currentPage: 0 }; // Return empty values on error
   }
+}
 
   async searchProperties(name: string): Promise<Property[]> {
     try {

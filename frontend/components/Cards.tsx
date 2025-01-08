@@ -1,19 +1,18 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { Property } from "../types/property";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
-import { Heart } from 'lucide-react';
+import { Heart } from "lucide-react";
 
 interface PropertyCardProps {
   property: Property;
+  onToggleFavorite: (id: number) => void;
 }
 
 const PropertyCard = React.memo(
-  ({ property }: PropertyCardProps) => {
-    const { id, name, imageUrl, noGuests, no_bedrooms, no_bathrooms, price ,location,country } = property;
+  ({ property, onToggleFavorite }: PropertyCardProps) => {
+    const { id, name, imageUrl, noGuests, no_bedrooms, no_bathrooms, price, location, country, isFavorite } = property;
 
     return (
       <div className="group">
@@ -38,13 +37,20 @@ const PropertyCard = React.memo(
             <CarouselPrevious className="absolute left-2 opacity-0 transition-opacity group-hover:opacity-100" />
             <CarouselNext className="absolute right-2 opacity-0 transition-opacity group-hover:opacity-100" />
           </Carousel>
-          <button className="absolute right-3 top-3 rounded-full bg-white p-2 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary">
-            <Heart className="h-5 w-5 text-neutral-500" />
+          {/* Toggle Favorite Button */}
+          <button
+            onClick={() => onToggleFavorite(id)}  // Call the function with the id of the property
+            className="absolute right-3 top-3 rounded-full bg-white p-2 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <Heart
+              className={`h-5 w-5 text-neutral-500 ${isFavorite ? "fill-red-500 text-red-500"
+                : "text-white fill-neutral-700 hover:fill-red-500 hover:text-red-500 hover:ease-in-out"}`}
+            />
           </button>
         </div>
         <Link href={`/property/${id}`} className="mt-3 block space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-neutral-900 line-clamp-1">{location},{country}</h3>
+            <h3 className="font-semibold text-neutral-900 line-clamp-1">{location}, {country}</h3>
             <div className="flex items-center space-x-1">
               <svg
                 viewBox="0 0 32 32"
@@ -63,7 +69,7 @@ const PropertyCard = React.memo(
             {no_bedrooms} bedroom{no_bedrooms > 1 ? 's' : ''} · {no_bathrooms} bathroom{no_bathrooms > 1 ? 's' : ''}
           </p>
           <p className="text-sm text-neutral-500">
-            <span className="font-semibold text-neutral-900">₹{price.toLocaleString()}</span> night
+            <span className="font-semibold text-neutral-900">₹{price.toLocaleString()}</span> per night
           </p>
         </Link>
       </div>

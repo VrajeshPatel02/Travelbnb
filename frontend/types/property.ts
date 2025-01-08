@@ -25,6 +25,12 @@ export interface PropertyApiResponse {
   };
 }
 
+export interface PaginatedProperties {
+  properties: Property[];
+  totalPages: number;
+  currentPage: number;
+}
+
 export interface FavoritesRequest {
   id: number; 
   status: boolean; 

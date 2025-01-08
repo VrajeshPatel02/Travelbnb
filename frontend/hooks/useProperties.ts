@@ -3,29 +3,62 @@ import { propertyService } from "@/services/propertyService";
 import { Property } from "@/types/property";
 import { useToast } from "@/hooks/use-toast";
 
+interface PropertyServiceResponse {
+  properties: Property[];
+  totalPages: number;
+}
+
 export const useProperties = () => {
   const [properties, setProperties] = useState<Property[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchProperties = async () => {
+    const fetchInitialProperties = async () => {
+      setIsLoading(true);
       try {
-        const propertyList = await propertyService.getAllProperties(0);
-        setProperties(propertyList);
+        const response: PropertyServiceResponse = await propertyService.getAllProperties(0);
+        const { properties: initialProperties, totalPages } = response;
+        setProperties(initialProperties);
+        setTotalPages(totalPages);
       } catch (error) {
         toast({
-            variant: "destructive",
+          variant: "destructive",
           description: "Failed to fetch properties. Please try again later.",
         });
-        console.error(
-          "Error fetching properties:",
-          error instanceof Error ? error.message : error
-        );
+        console.error("Error fetching properties:", error instanceof Error ? error.message : error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchProperties();
+    fetchInitialProperties();
   }, [toast]);
+
+  const loadMoreProperties = useCallback(async () => {
+    if (isLoading || currentPage >= totalPages - 1) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const nextPage = currentPage + 1;
+      const response: PropertyServiceResponse = await propertyService.getAllProperties(nextPage);
+      const { properties: newProperties } = response;
+      setProperties((prevProps) => [...prevProps, ...newProperties]);
+      setCurrentPage(nextPage);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        description: "Failed to load more properties. Please try again later.",
+      });
+      console.error("Error loading more properties:", error instanceof Error ? error.message : error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoading, currentPage, totalPages, toast]);
 
   const toggleFavorite = useCallback(
     async (propertyId: number) => {
@@ -33,18 +66,18 @@ export const useProperties = () => {
         const property = properties.find((prop) => prop.id === propertyId);
         if (property) {
           const updatedFavorite = !property.isFavorite;
-
+  
           await propertyService.setFavorites({
             id: property.id,
             status: updatedFavorite,
           });
-
+  
           toast({
             description: updatedFavorite
               ? "Saved to Favourites."
               : "Removed from Favourites.",
           });
-
+  
           // Update state
           setProperties((prevProps) =>
             prevProps.map((prop) =>
@@ -56,7 +89,7 @@ export const useProperties = () => {
         }
       } catch (error) {
         toast({
-            variant: "destructive",
+          variant: "destructive",
           description: "Failed to update favorite status. Please try again.",
         });
         console.error(
@@ -68,5 +101,5 @@ export const useProperties = () => {
     [properties, toast]
   );
 
-  return { properties, toggleFavorite };
+  return { properties, loadMoreProperties, toggleFavorite, hasMore: currentPage < totalPages - 1, isLoading };
 };
