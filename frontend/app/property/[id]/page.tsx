@@ -23,6 +23,8 @@ const PropertyDetails = () => {
   const [property, setProperty] = useState<Property | null>(null);
   const [error, setError] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Property[] | null>(null);
+  const [isLocalFavorite , setIsLocalFavorite] = useState(false);
+
 
   const [guestCount, setGuestCount] = useState(1);
   const [nights, setNights] = useState(1);
@@ -36,11 +38,37 @@ const PropertyDetails = () => {
   const increaseNights = () => setNights((prev) => prev + 1);
   const decreaseNights = () => setNights((prev) => Math.max(prev - 1, 1));
 
+  const handleFavoriteToggle = async () => {
+    if (!property) return;
+    
+    try {
+      // Update local state immediately for UI feedback
+      setIsLocalFavorite(prev => !prev);
+      
+      // Make API call to toggle favorite
+      await api.post(`/favourite/myfavourites?propertyId=${property.id}`, {
+        isFavorite: !isLocalFavorite
+      });
+      
+      // Update the property state with new favorite status
+      setProperty(prev => prev ? {
+        ...prev,
+        isFavorite: !prev.isFavorite
+      } : null);
+      
+    } catch (err) {
+      // Revert local state if API call fails
+      setIsLocalFavorite(prev => !prev);
+      console.error("Failed to toggle favorite:", err);
+    }
+  };
+
   useEffect(() => {
     const fetchPropertyDetails = async () => {
       try {
         const response = await api.get<Property>(`/property/${id}`);
         setProperty(response.data);
+        setIsLocalFavorite(response.data.isFavorite);
       } catch (err: unknown) {
         console.error("Failed to fetch property details:", err);
         setError((err as Error).message);
@@ -79,10 +107,19 @@ const PropertyDetails = () => {
                 <Share className="w-4 h-4" />
                 <span className="underline font-semibold">Share</span>
               </button>
-              <button className="flex items-center space-x-2 hover:bg-gray-100 px-4 py-2 rounded-md transition duration-200">
-                <Heart className="w-4 h-4" />
-                <span className="underline font-semibold">Save</span>
-              </button>
+              <button 
+            onClick={handleFavoriteToggle}
+            className="flex items-center space-x-2 hover:bg-gray-100 px-4 py-2 rounded-md transition duration-200"
+          >
+            <Heart 
+              className={`w-4 h-4 ${
+                isLocalFavorite ? "fill-red-500 text-red-500" : "text-black"
+              }`} 
+            />
+            <span className="underline font-semibold">
+              {isLocalFavorite ? 'Saved' : 'Save'}
+            </span>
+          </button>
             </div>
           </div>
           

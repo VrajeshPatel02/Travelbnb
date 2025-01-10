@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { Property } from "../types/property";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import { Heart } from "lucide-react";
@@ -12,7 +12,17 @@ interface PropertyCardProps {
 
 const PropertyCard = React.memo(
   ({ property, onToggleFavorite }: PropertyCardProps) => {
-    const { id, name, imageUrl, noGuests, no_bedrooms, no_bathrooms, price, location, country, isFavorite } = property;
+    // Add local state to handle immediate UI updates
+    const [isLocalFavorite, setIsLocalFavorite] = useState(property.isFavorite);
+
+    // Handle favorite toggle with local state
+    const handleFavoriteClick = useCallback((event: React.MouseEvent) => {
+      event.preventDefault(); // Prevent Link navigation when clicking the heart
+      setIsLocalFavorite(prev => !prev);
+      onToggleFavorite(property.id);
+    }, [property.id, onToggleFavorite]);
+
+    const { id, name, imageUrl, noGuests, no_bedrooms, no_bathrooms, price, location, country } = property;
 
     return (
       <div className="group">
@@ -39,18 +49,23 @@ const PropertyCard = React.memo(
           </Carousel>
           {/* Toggle Favorite Button */}
           <button
-            onClick={() => onToggleFavorite(id)}  // Call the function with the id of the property
+            onClick={handleFavoriteClick}
             className="absolute right-3 top-3 rounded-full bg-white p-2 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <Heart
-              className={`h-5 w-5 text-neutral-500 ${isFavorite ? "fill-red-500 text-red-500"
-                : "text-white fill-neutral-700 hover:fill-red-500 hover:text-red-500 hover:ease-in-out"}`}
+              className={`h-5 w-5 text-neutral-500 ${
+                isLocalFavorite
+                  ? "fill-red-500 text-red-500"
+                  : "text-white fill-neutral-700 hover:fill-red-500 hover:text-red-500 hover:ease-in-out"
+              }`}
             />
           </button>
         </div>
         <Link href={`/property/${id}`} className="mt-3 block space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-neutral-900 line-clamp-1">{location}, {country}</h3>
+            <h3 className="font-semibold text-neutral-900 line-clamp-1">
+              {location}, {country}
+            </h3>
             <div className="flex items-center space-x-1">
               <svg
                 viewBox="0 0 32 32"
@@ -75,7 +90,9 @@ const PropertyCard = React.memo(
       </div>
     );
   },
-  (prevProps, nextProps) => prevProps.property.id === nextProps.property.id
+  (prevProps, nextProps) => 
+    prevProps.property.id === nextProps.property.id && 
+    prevProps.property.isFavorite === nextProps.property.isFavorite
 );
 
 PropertyCard.displayName = "PropertyCard";
