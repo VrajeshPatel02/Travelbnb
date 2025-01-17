@@ -2,6 +2,7 @@ package com.travelbnb.payload;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class PropertyDto {
@@ -16,6 +17,7 @@ public class PropertyDto {
     private String description;
     private List<String> imageUrl;
     private Integer avgRating;
-    private Boolean isFavorite;
+    private FavouriteDto favouriteDto;
     private UserDto user;
+    private Set<String> facilities;
 }

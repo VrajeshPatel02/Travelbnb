@@ -66,18 +66,18 @@ export const useProperties = () => {
         const property = properties.find((prop) => prop.id === propertyId);
         if (property) {
           const updatedFavorite = !property.isFavorite;
-  
+
           await propertyService.setFavorites({
             id: property.id,
             status: updatedFavorite,
           });
-  
+
           toast({
             description: updatedFavorite
               ? "Saved to Favourites."
               : "Removed from Favourites.",
           });
-  
+
           // Update state
           setProperties((prevProps) =>
             prevProps.map((prop) =>

@@ -81,74 +81,7 @@ public class PropertyImpl implements PropertyService{
     }
 
 
-    public Property DtoToEntity(PropertyDto pdto) {
-        Property entity = new Property();
-        entity.setId(pdto.getId());
-        entity.setName(pdto.getName());
-        entity.setNoGuests(pdto.getNoGuests());
-        entity.setNo_bedrooms(pdto.getNo_bedrooms());
-        entity.setNo_bathrooms(pdto.getNo_bathrooms());
-        entity.setPrice(pdto.getPrice());
-        return entity;
-    }
-    public PropertyDto EntityToDto(Property entity,User user) {
-        PropertyDto pdto = new PropertyDto();
-        pdto.setId(entity.getId());
-        pdto.setName(entity.getName());
-        pdto.setNoGuests(entity.getNoGuests());
-        pdto.setNo_bedrooms(entity.getNo_bedrooms());
-        pdto.setNo_bathrooms(entity.getNo_bathrooms());
-        pdto.setPrice(entity.getPrice());
-        pdto.setCountry(entity.getCountry().getName());
-        pdto.setLocation(entity.getLocation().getName());
-        pdto.setDescription(entity.getDescription());
-        pdto.setAvgRating(5);
-        List<Image> images = imageRepository.findAllByPropertyId(entity.getId());
-        if (!images.isEmpty()) {
-            List<String> imageUrls = images.stream()
-                    .map(Image::getImageUrl) // Extract URLs from the Image entity
-                    .collect(Collectors.toList());
-            pdto.setImageUrl(imageUrls); // Set the list of URLs
-        } else {
-            pdto.setImageUrl(Collections.emptyList()); // Set an empty list if no images are found
-        }
-        if(user != null) {
-            Optional<Favourite> favourites = favouriteRepository.findFavourites(user.getId(), entity.getId());
-            if(favourites.isPresent()){
-                pdto.setIsFavorite(favourites.get().getStatus());
-            }else {
-                pdto.setIsFavorite(false);
-            }
-        } else {
-            pdto.setIsFavorite(false); // Set the favorite status as false if the user is not logged in
-        }
-        return pdto;
-    }
-
-    public PropertyDto EntityToDto(Property entity) {
-        PropertyDto pdto = new PropertyDto();
-        pdto.setId(entity.getId());
-        pdto.setName(entity.getName());
-        pdto.setNoGuests(entity.getNoGuests());
-        pdto.setNo_bedrooms(entity.getNo_bedrooms());
-        pdto.setNo_bathrooms(entity.getNo_bathrooms());
-        pdto.setPrice(entity.getPrice());
-        pdto.setCountry(entity.getCountry().getName());
-        pdto.setLocation(entity.getLocation().getName());
-        pdto.setDescription(entity.getDescription());
-        pdto.setAvgRating(5);
-        List<Image> images = imageRepository.findAllByPropertyId(entity.getId());
-        if (!images.isEmpty()) {
-            List<String> imageUrls = images.stream()
-                    .map(Image::getImageUrl) // Extract URLs from the Image entity
-                    .collect(Collectors.toList());
-            pdto.setImageUrl(imageUrls); // Set the list of URLs
-        } else {
-            pdto.setImageUrl(Collections.emptyList()); // Set an empty list if no images are found
-        }
-        pdto.setIsFavorite(false); // Set the favorite status as false if the user is not logged in
-        return pdto;
-    }
+    
 
 
     @Override
@@ -225,7 +158,87 @@ public class PropertyImpl implements PropertyService{
 
         return formDto;
     }
+    @Override
+    public PropertyDto getPropertyById(Long id, User user) {
+        Optional<Property> property = propertyRepository.findById(id);
+        if(property.isPresent()){
+            PropertyDto propertyDto = EntityToDto(property.get(),user);
+            User host = property.get().getUser();
+            propertyDto.setUser(new UserDto(host.getId(), host.getName(),host.getUsername(),host.getEmail(),host.getRole()));
+            propertyDto.setFacilities(property.get().getFacilities());
+            return propertyDto;
+        }else{
+            throw( new RuntimeException("Property not found with ID: " + id));
+        }
+    }
+    public Property DtoToEntity(PropertyDto pdto) {
+        Property entity = new Property();
+        entity.setId(pdto.getId());
+        entity.setName(pdto.getName());
+        entity.setNoGuests(pdto.getNoGuests());
+        entity.setNo_bedrooms(pdto.getNo_bedrooms());
+        entity.setNo_bathrooms(pdto.getNo_bathrooms());
+        entity.setPrice(pdto.getPrice());
+        return entity;
+    }
+    public PropertyDto EntityToDto(Property entity,User user) {
+        PropertyDto pdto = new PropertyDto();
+        pdto.setId(entity.getId());
+        pdto.setName(entity.getName());
+        pdto.setNoGuests(entity.getNoGuests());
+        pdto.setNo_bedrooms(entity.getNo_bedrooms());
+        pdto.setNo_bathrooms(entity.getNo_bathrooms());
+        pdto.setPrice(entity.getPrice());
+        pdto.setCountry(entity.getCountry().getName());
+        pdto.setLocation(entity.getLocation().getName());
+        pdto.setDescription(entity.getDescription());
+        pdto.setAvgRating(5);
+        List<Image> images = imageRepository.findAllByPropertyId(entity.getId());
+        if (!images.isEmpty()) {
+            List<String> imageUrls = images.stream()
+                    .map(Image::getImageUrl) // Extract URLs from the Image entity
+                    .collect(Collectors.toList());
+            pdto.setImageUrl(imageUrls); // Set the list of URLs
+        } else {
+            pdto.setImageUrl(Collections.emptyList()); // Set an empty list if no images are found
+        }
+        if(user != null) {
+            Optional<Favourite> favourites = favouriteRepository.findFavourites(user.getId(), entity.getId());
+            if(favourites.isPresent()){
+                pdto.setFavouriteDto(new FavouriteDto( favourites.get().getId(),favourites.get().getStatus(), favourites.get().getProperty().getId(), favourites.get().getUser().getId()));
+            }else {
+                pdto.setFavouriteDto(new FavouriteDto( false));
+            }
+        } else {
+            pdto.setFavouriteDto(new FavouriteDto(false));// Set the favorite status as false if the user is not logged in
+        }
+        return pdto;
+    }
 
+    public PropertyDto EntityToDto(Property entity) {
+        PropertyDto pdto = new PropertyDto();
+        pdto.setId(entity.getId());
+        pdto.setName(entity.getName());
+        pdto.setNoGuests(entity.getNoGuests());
+        pdto.setNo_bedrooms(entity.getNo_bedrooms());
+        pdto.setNo_bathrooms(entity.getNo_bathrooms());
+        pdto.setPrice(entity.getPrice());
+        pdto.setCountry(entity.getCountry().getName());
+        pdto.setLocation(entity.getLocation().getName());
+        pdto.setDescription(entity.getDescription());
+        pdto.setAvgRating(5);
+        List<Image> images = imageRepository.findAllByPropertyId(entity.getId());
+        if (!images.isEmpty()) {
+            List<String> imageUrls = images.stream()
+                    .map(Image::getImageUrl) // Extract URLs from the Image entity
+                    .collect(Collectors.toList());
+            pdto.setImageUrl(imageUrls); // Set the list of URLs
+        } else {
+            pdto.setImageUrl(Collections.emptyList()); // Set an empty list if no images are found
+        }
+        pdto.setFavouriteDto(new FavouriteDto(false)); // Set the favorite status as false if the user is not logged in
+        return pdto;
+    }
 
     public Country verifyCountry(String country_name){
         Optional<Country> byName = countryRepository.findByName(country_name);
@@ -236,17 +249,5 @@ public class PropertyImpl implements PropertyService{
         Optional<Location> byName = locationRepository.findByName(location_name);
         return byName.orElse(null);
     }
-    public PropertyDto getPropertyById(Long id) {
-        Optional<Property> property = propertyRepository.findById(id);
-        if(property.isPresent()){
-            PropertyDto propertyDto = EntityToDto(property.get());
-            User user = property.get().getUser();
-            propertyDto.setUser(new UserDto(user.getId(), user.getName(),user.getUsername(),user.getEmail(),user.getRole()));
-            return propertyDto;
-        }else{
-            throw( new RuntimeException("Property not found with ID: " + id));
-        }
-    }
-
-
+    
 }

@@ -36,4 +36,13 @@ public class FavouriteController {
         List<FavouriteDto> favourtesByUser = favorite.getAllFavourtesByUser(user);
         return new ResponseEntity<>(favourtesByUser, HttpStatus.OK);
     }
+
+    @PutMapping("/update/{id}")
+    public  ResponseEntity<?> updateFavouriteStatus(@PathVariable Long id){
+        FavouriteDto dto = favorite.updateFavouriteStatus(id);
+        if (dto!=null) {
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Favourite not found", HttpStatus.NOT_FOUND);
+    }
 }

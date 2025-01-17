@@ -84,8 +84,8 @@ public class PropertyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPropertyById(@PathVariable Long id) {
-        PropertyDto p = property.getPropertyById(id);
+    public ResponseEntity<?> getPropertyById(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        PropertyDto p = property.getPropertyById(id, user);
         return ResponseEntity.ok(p);
     }
 

@@ -54,4 +54,13 @@ public class FavouriteImpl implements FavouriteService{
         List<Favourite> allFavorites = favouriteRepository.findAllByUserId(user.getId());
         return allFavorites.stream().map(this::EntityToDto).toList();
     }
+
+    public FavouriteDto updateFavouriteStatus(Long id) {
+        Favourite favourite = favouriteRepository.findById(id).orElse(null);
+        if (favourite!= null) {
+            favourite.setStatus(!favourite.getStatus());
+            return EntityToDto(favouriteRepository.save(favourite)) ;
+        }
+        return null;
+    }
 }

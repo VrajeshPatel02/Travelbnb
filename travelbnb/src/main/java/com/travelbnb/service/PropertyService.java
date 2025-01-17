@@ -16,7 +16,7 @@ public interface PropertyService {
     boolean deleteProperty(Long id);
     PropertyDto updatePropertyDetails(PropertyDto pdto);
 
-    PropertyDto getPropertyById(Long id);
+    PropertyDto getPropertyById(Long id, User user);
 
     Page<PropertyDto> getAll(int pageSize, int pageNo, String sortBy, String sortDir, User user);
     FormDto addNewProperty(FormDto pdto, MultipartFile[] file, User user);
