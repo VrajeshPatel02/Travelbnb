@@ -13,7 +13,7 @@ interface PropertyCardProps {
 const PropertyCard = React.memo(
   ({ property, onToggleFavorite }: PropertyCardProps) => {
     // Add local state to handle immediate UI updates
-    const [isLocalFavorite, setIsLocalFavorite] = useState(property.isFavorite);
+    const [isLocalFavorite, setIsLocalFavorite] = useState(property.favouriteDto.status);
 
     // Handle favorite toggle with local state
     const handleFavoriteClick = useCallback((event: React.MouseEvent) => {
@@ -22,7 +22,7 @@ const PropertyCard = React.memo(
       onToggleFavorite(property.id);
     }, [property.id, onToggleFavorite]);
 
-    const { id, name, imageUrl, noGuests, no_bedrooms, no_bathrooms, price, location, country } = property;
+    const { id, name, imageUrl, favouriteDto, no_bedrooms, no_bathrooms, price, location, country } = property;
 
     return (
       <div className="group">
@@ -92,7 +92,7 @@ const PropertyCard = React.memo(
   },
   (prevProps, nextProps) => 
     prevProps.property.id === nextProps.property.id && 
-    prevProps.property.isFavorite === nextProps.property.isFavorite
+    prevProps.property.favouriteDto.status === nextProps.property.favouriteDto.status
 );
 
 PropertyCard.displayName = "PropertyCard";

@@ -64,20 +64,32 @@ export const useProperties = () => {
     async (propertyId: number) => {
       try {
         const property = properties.find((prop) => prop.id === propertyId);
+  
         if (property) {
-          const updatedFavorite = !property.isFavorite;
-
-          await propertyService.setFavorites({
-            id: property.id,
-            status: updatedFavorite,
-          });
-
+          const { favouriteDto } = property;
+  
+          // Determine whether to create or update the favorite
+          const isCreateRequest = favouriteDto?.id === 0; // If `id` is 0, make a POST request
+  
+          const updatedFavorite = !property.favouriteDto.status;
+  
+          if (isCreateRequest) {    
+            // Make POST request
+            await propertyService.setFavorites({
+              id: property.id,
+              status: updatedFavorite,
+            });
+          } else {
+            // Make UPDATE request
+            await propertyService.updateFavorites(favouriteDto.id);
+          }
+  
           toast({
             description: updatedFavorite
               ? "Saved to Favourites."
               : "Removed from Favourites.",
           });
-
+  
           // Update state
           setProperties((prevProps) =>
             prevProps.map((prop) =>
@@ -100,6 +112,6 @@ export const useProperties = () => {
     },
     [properties, toast]
   );
-
+  
   return { properties, loadMoreProperties, toggleFavorite, hasMore: currentPage < totalPages - 1, isLoading };
 };

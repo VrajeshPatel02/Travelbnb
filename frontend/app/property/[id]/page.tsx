@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import api from "@/services/authService";
 import { Property } from "@/types/property";
@@ -17,13 +17,11 @@ import { Input } from "@/components/ui/Input";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CalendarIcon, Star, Heart, Share, MapPin } from 'lucide-react';
+import { useProperty } from "@/hooks/useProperty";
 
 const PropertyDetails = () => {
   const { id } = useParams(); // Fetch property ID from the URL
-  const [property, setProperty] = useState<Property | null>(null);
-  const [error, setError] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Property[] | null>(null);
-  const [isLocalFavorite , setIsLocalFavorite] = useState(false);
 
 
   const [guestCount, setGuestCount] = useState(1);
@@ -34,61 +32,15 @@ const PropertyDetails = () => {
   const increaseGuestCount = () => setGuestCount((prev) => Math.min(prev + 1, property?.noGuests || prev));
   const decreaseGuestCount = () => setGuestCount((prev) => Math.max(prev - 1, 1));
 
-  // Handlers for Nights
-  const increaseNights = () => setNights((prev) => prev + 1);
-  const decreaseNights = () => setNights((prev) => Math.max(prev - 1, 1));
+  const { property, toggleFavorite, isLoading } = useProperty(Number(id));
 
-  const handleFavoriteToggle = async () => {
-    if (!property) return;
-    
-    try {
-      // Update local state immediately for UI feedback
-      setIsLocalFavorite(prev => !prev);
-      
-      // Make API call to toggle favorite
-      await api.post(`/favourite/myfavourites?propertyId=${property.id}`, {
-        isFavorite: !isLocalFavorite
-      });
-      
-      // Update the property state with new favorite status
-      setProperty(prev => prev ? {
-        ...prev,
-        isFavorite: !prev.isFavorite
-      } : null);
-      
-    } catch (err) {
-      // Revert local state if API call fails
-      setIsLocalFavorite(prev => !prev);
-      console.error("Failed to toggle favorite:", err);
-    }
-  };
-
-  useEffect(() => {
-    const fetchPropertyDetails = async () => {
-      try {
-        const response = await api.get<Property>(`/property/${id}`);
-        setProperty(response.data);
-        setIsLocalFavorite(response.data.isFavorite);
-      } catch (err: unknown) {
-        console.error("Failed to fetch property details:", err);
-        setError((err as Error).message);
-      }
-    };
-
-    fetchPropertyDetails();
-  }, [id]);
-
-  if (error) {
-    return <p className="text-red-500 text-center mt-4">{error}</p>;
-  }
-
-  if (!property) {
+  if (!property || isLoading) {
     return <p className="text-center mt-4">Loading...</p>;
   }
 
   return (
     <>
-      <Navbar setSearchResults={() => {}} resetSearch={() => {}} />
+      <Navbar setSearchResults={() => { }} resetSearch={() => { }} />
       <div className="min-h-screen pt-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">{property.name}</h1>
@@ -107,22 +59,21 @@ const PropertyDetails = () => {
                 <Share className="w-4 h-4" />
                 <span className="underline font-semibold">Share</span>
               </button>
-              <button 
-            onClick={handleFavoriteToggle}
-            className="flex items-center space-x-2 hover:bg-gray-100 px-4 py-2 rounded-md transition duration-200"
-          >
-            <Heart 
-              className={`w-4 h-4 ${
-                isLocalFavorite ? "fill-red-500 text-red-500" : "text-black"
-              }`} 
-            />
-            <span className="underline font-semibold">
-              {isLocalFavorite ? 'Saved' : 'Save'}
-            </span>
-          </button>
+              <button
+                onClick={toggleFavorite}
+                className="flex items-center space-x-2 hover:bg-gray-100 px-4 py-2 rounded-md transition duration-200"
+              >
+                <Heart
+                  className={`w-4 h-4 ${property.favouriteDto.status ? "fill-red-500 text-red-500" : "text-black"
+                    }`}
+                />
+                <span className="underline font-semibold">
+                  {property.favouriteDto.status ? 'Saved' : 'Save'}
+                </span>
+              </button>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[480px] mb-8">
             <div className="col-span-2 row-span-2 relative">
               <img
@@ -166,13 +117,13 @@ const PropertyDetails = () => {
               </Button>
             </div>
           </div>
-          
+
           <div className="flex justify-between space-x-12">
             <div className="w-2/3">
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h2 className="text-2xl font-semibold mb-2">
-                    Entire villa hosted by john doe 
+                    Entire villa hosted by john doe
                   </h2>
                   <p className="text-gray-600">
                     {property.noGuests} guests · {property.no_bedrooms} bedrooms · {property.no_bathrooms} bathrooms
@@ -184,16 +135,16 @@ const PropertyDetails = () => {
                   className="w-16 h-16 rounded-full"
                 />
               </div>
-              
+
               <hr className="my-8" />
-              
+
               <div className="mb-8">
                 <h3 className="text-xl font-semibold mb-4">About this space</h3>
                 <p className="text-gray-600">{property.description}</p>
               </div>
-              
+
               <hr className="my-8" />
-              
+
               <div>
                 <h3 className="text-xl font-semibold mb-4">What this place offers</h3>
                 <ul className="grid grid-cols-2 gap-4">
@@ -219,7 +170,7 @@ const PropertyDetails = () => {
                     <span className="text-gray-500 ml-1">(289)</span>
                   </div>
                 </div>
-                
+
                 <div className="border border-gray-300 rounded-lg overflow-hidden mb-4">
                   <div className="flex">
                     <div className="w-1/2 p-2 border-r border-gray-300">
@@ -248,7 +199,7 @@ const PropertyDetails = () => {
                     </PopoverContent>
                   </Popover>
                 </div>
-                
+
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full mb-4">
@@ -285,15 +236,15 @@ const PropertyDetails = () => {
                     </div>
                   </PopoverContent>
                 </Popover>
-                
+
                 <Button className="w-full bg-rose-600 hover:bg-rose-700 text-white">
                   Reserve
                 </Button>
-                
+
                 <div className="text-center text-gray-500 mt-4">
                   You won't be charged yet
                 </div>
-                
+
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between">
                     <span className="underline">₹{property.price.toLocaleString()} x {nights} nights</span>
@@ -308,7 +259,7 @@ const PropertyDetails = () => {
                     <span>₹2,000</span>
                   </div>
                 </div>
-                
+
                 <div className="mt-4 pt-4 border-t border-gray-300 flex justify-between font-bold">
                   <span>Total</span>
                   <span>₹{(property.price * nights + 3000).toLocaleString()}</span>

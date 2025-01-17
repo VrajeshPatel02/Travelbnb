@@ -12,7 +12,15 @@ class PropertyService {
       return handleApiError(error);
     }
   }
-
+  async updateFavorites(id: number): Promise<ApiResponse<FavoritesResponse>> {
+    try {
+      const response = await api.put(`/favourite/update/${id}`);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  }
+  
   
   async getAllProperties(pageNo: number): Promise<PaginatedProperties> {
   try {
@@ -33,6 +41,15 @@ class PropertyService {
     return { properties: [], totalPages: 0, currentPage: 0 }; // Return empty values on error
   }
 }
+async getPropertyById(propertyId: number): Promise<Property> {
+  try {
+    const response = await api.get<Property>(`/property/${propertyId}`);
+    return response.data;
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
 
   async searchProperties(name: string): Promise<Property[]> {
     try {

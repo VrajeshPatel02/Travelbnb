@@ -10,7 +10,8 @@ export interface Property {
   description: string;
   imageUrl: string[];
   avgRating: number;
-  isFavorite: boolean;
+  favouriteDto: FavoritesResponse;
+  facilities: string[];
 }
 
 export interface PropertyApiResponse {
