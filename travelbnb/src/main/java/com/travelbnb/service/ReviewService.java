@@ -10,4 +10,5 @@ public interface ReviewService {
     List<ReviewDto> getReviewById(long id, int pageSize,int pageNo,String sortBy,String sortDir);
     boolean deleteReview(long id);
     ReviewDto updateReview(ReviewDto review);
+    List<ReviewDto> getAllReviewsByProperty(Long propertyId);
 }

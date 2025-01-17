@@ -10,7 +10,7 @@ export interface LoginRequest {
       name: string;
       username: string;
       email: string;
-      roles: string[];
+      role: string;
     };
   }
   
@@ -19,7 +19,7 @@ export interface LoginRequest {
     name: string;
     username: string;
     email: string;
-    roles: string[];
+    role: string;
   }
   export interface SignUpRequest {
     name: string;
@@ -27,22 +27,4 @@ export interface LoginRequest {
     email: string;
     password: string;
     role: string;
-  }
-
-  export interface Property {
-    id: number;
-    name: string;
-    noGuests: number;
-    no_bedrooms: number;
-    no_bathrooms: number;
-    price: number;
-    country: {
-      id: number;
-      name: string;
-    };
-    location: {
-      id: number;
-      name: string;
-    };
-    description: string | null;
   }

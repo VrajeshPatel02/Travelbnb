@@ -212,6 +212,7 @@ public class PropertyImpl implements PropertyService{
         } else {
             pdto.setFavouriteDto(new FavouriteDto(false));// Set the favorite status as false if the user is not logged in
         }
+
         return pdto;
     }
 

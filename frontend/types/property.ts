@@ -1,3 +1,5 @@
+import { User } from "./auth";
+
 export interface Property {
   id: number;
   name: string;
@@ -16,13 +18,13 @@ export interface Property {
 
 export interface PropertyApiResponse {
   _embedded: {
-    propertyDtoList: Property[]; 
+    propertyDtoList: Property[];
   };
   page: {
-    size: number; 
+    size: number;
     totalElements: number;
-    totalPages: number; 
-    number: number; 
+    totalPages: number;
+    number: number;
   };
 }
 
@@ -33,19 +35,27 @@ export interface PaginatedProperties {
 }
 
 export interface FavoritesRequest {
-  id: number; 
-  status: boolean; 
+  id: number;
+  status: boolean;
 }
 
 export interface FavoritesResponse {
-  id: number; 
+  id: number;
   status: boolean;
   property: number;
-  user: number; 
+  user: number;
 }
 
 export interface ApiResponse<T> {
-  data: T; 
-  message: string; 
-  status: number; 
+  data: T;
+  message: string;
+  status: number;
+}
+
+export interface Review {
+  id: number;
+  rating: number;
+  description: string;
+  user: User;
+  property: number;
 }

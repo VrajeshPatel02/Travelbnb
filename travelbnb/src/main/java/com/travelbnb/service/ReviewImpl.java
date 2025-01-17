@@ -4,6 +4,7 @@ import com.travelbnb.entity.Property;
 import com.travelbnb.entity.Review;
 import com.travelbnb.entity.User;
 import com.travelbnb.payload.ReviewDto;
+import com.travelbnb.payload.UserDto;
 import com.travelbnb.repository.PropertyRepository;
 import com.travelbnb.repository.ReviewsRepository;
 import com.travelbnb.repository.UserEntityRepository;
@@ -62,7 +63,8 @@ public class ReviewImpl implements ReviewService{
         dto.setRating(entity.getRating());
         dto.setDescription(entity.getDescription());
         dto.setProperty(entity.getProperty().getId());
-        dto.setUser(entity.getUser().getId());
+        User user = entity.getUser();
+        dto.setUser(new UserDto(user.getId(),user.getName(),user.getUsername(), user.getEmail(), user.getRole()));
         return dto;
     }
 
@@ -94,6 +96,13 @@ public class ReviewImpl implements ReviewService{
     public ReviewDto updateReview(ReviewDto review) {
         return null;
     }
+
+    @Override
+    public List<ReviewDto> getAllReviewsByProperty(Long propertyId) {
+        List<Review> allByProperty = reviewsRepository.findAllByProperty(propertyId);
+        return allByProperty.stream().map(this::EntityToDto).collect(Collectors.toList());
+    }
+
     public Review verifyUserReview(User user, long propertyId) {
         Optional<Property> opProperty = propertyRepository.findById(propertyId);
         if(opProperty.isPresent()){

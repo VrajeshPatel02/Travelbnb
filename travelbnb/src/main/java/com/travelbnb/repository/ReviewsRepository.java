@@ -1,6 +1,5 @@
 package com.travelbnb.repository;
 
-import com.travelbnb.entity.Property;
 import com.travelbnb.entity.Review;
 import com.travelbnb.entity.User;
 import org.springframework.data.domain.Page;
@@ -19,4 +18,7 @@ public interface ReviewsRepository extends JpaRepository<Review, Long> {
     Review findByReviewUser(@Param("userId")Long userId,@Param("propertyId") Long propertyId);
 
     Page<Review> findByUser(User user, PageRequest pageable);
+
+    @Query(value="SELECT r.* FROM Review r WHERE r.property_id=:propertyId", nativeQuery = true)
+    List<Review> findAllByProperty(@Param("propertyId") Long propertyId);
 }

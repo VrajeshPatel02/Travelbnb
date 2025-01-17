@@ -1,6 +1,5 @@
 import api from './authService';
-import axios from 'axios';
-import { FavoritesRequest, FavoritesResponse, PropertyApiResponse, ApiResponse, Property, PaginatedProperties } from "@/types/property";
+import { FavoritesRequest, FavoritesResponse, PropertyApiResponse, ApiResponse, Property, PaginatedProperties, Review } from "@/types/property";
 import {handleApiError} from './errorHandler';
 
 class PropertyService {

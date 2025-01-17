@@ -15,12 +15,14 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userDetails, setUserDetails] = useState<{ username: string; email: string } | null>(null);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [hostingButton, useHostingButton] = useState('Airbnb your home')
 
     useEffect(() => {
         const fetchUserDetails = () => {
             if (authService.isAuthenticated()) {
                 setIsAuthenticated(true);
                 const details = authService.getUser();
+                if (details?.role === 'ROLE_ADMIN') {useHostingButton('Switch to hosting')};
                 setUserDetails(details);
             } else {
                 setIsAuthenticated(false);
@@ -109,8 +111,8 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
                     </div>
 
                     <div className="flex items-center">
-                        <a href="/host/addProperty" className="hidden md:block text-sm font-medium text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-full">
-                            Become a host
+                        <a href="/host/addProperty" className="hidden md:block text-sm font-semibold text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-full">
+                        {hostingButton}
                         </a>
                         <button className="p-2 rounded-full text-gray-700 hover:bg-gray-100">
                             <Globe className="w-5 h-5" />

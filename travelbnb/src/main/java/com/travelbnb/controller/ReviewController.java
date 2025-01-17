@@ -42,4 +42,14 @@ public class ReviewController {
         List<ReviewDto> all = review.getReviewById(id,pageSize,pageNo,sortBy,sortDir);
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
+
+    @GetMapping("/PropertyReviews")
+    public ResponseEntity<?> getPropertyReviews(@RequestParam long propertyId) {
+        try {
+            List<ReviewDto> allReviewsByProperty = review.getAllReviewsByProperty(propertyId);
+            return new ResponseEntity<>(allReviewsByProperty, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
