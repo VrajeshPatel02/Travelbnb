@@ -77,35 +77,35 @@ const PropertyDetails = () => {
           <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[480px] mb-8">
             <div className="col-span-2 row-span-2 relative">
               <img
-                src={property.imageUrl[0]}
+                src={property.imageUrls[0].imageUrl}
                 alt="Main property view"
                 className="w-full h-full object-cover rounded-l-2xl"
               />
             </div>
             <div className="col-span-1 row-span-1">
               <img
-                src={property.imageUrl[1]}
+                src={property.imageUrls[1].imageUrl}
                 alt="Property detail 1"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="col-span-1 row-span-1">
               <img
-                src={property.imageUrl[2]}
+                src={property.imageUrls[2].imageUrl}
                 alt="Property detail 2"
                 className="w-full h-full object-cover rounded-tr-2xl"
               />
             </div>
             <div className="col-span-1 row-span-1">
               <img
-                src={property.imageUrl[3]}
+                src={property.imageUrls[3].imageUrl}
                 alt="Property detail 3"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="col-span-1 row-span-1 relative">
               <img
-                src={property.imageUrl[4]}
+                src={property.imageUrls[4].imageUrl}
                 alt="Property detail 4"
                 className="w-full h-full object-cover rounded-br-2xl"
               />

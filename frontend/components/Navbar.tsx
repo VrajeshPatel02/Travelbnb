@@ -111,7 +111,7 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
                     </div>
 
                     <div className="flex items-center">
-                        <a href="/host/addProperty" className="hidden md:block text-sm font-semibold text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-full">
+                        <a href="/host" className="hidden md:block text-sm font-semibold text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-full">
                         {hostingButton}
                         </a>
                         <button className="p-2 rounded-full text-gray-700 hover:bg-gray-100">

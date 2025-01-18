@@ -5,6 +5,7 @@ import com.travelbnb.entity.User;
 import com.travelbnb.payload.FormDto;
 import com.travelbnb.payload.PropertyDto;
 import com.travelbnb.service.PropertyImpl;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -64,7 +65,14 @@ public class PropertyController {
 
         return ResponseEntity.ok(pagedModel);
     }
-
+    @GetMapping("/HostProperties")
+    public ResponseEntity<?> getPropertiesByHost(@AuthenticationPrincipal User host) {
+        List<PropertyDto> hostProperties = property.getHostProperties(host);
+        if (hostProperties.isEmpty()) {
+            return new ResponseEntity<>("No properties found for this host", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(hostProperties, HttpStatus.OK);
+    }
     @PutMapping("/updateProperty")
     public ResponseEntity<?> updateProperty(@RequestParam PropertyDto dto) {
         PropertyDto updated = property.updatePropertyDetails(dto);

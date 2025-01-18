@@ -15,7 +15,7 @@ public class PropertyDto {
     private String country;
     private String location;
     private String description;
-    private List<String> imageUrl;
+    private List<ImageDto> imageUrls;
     private Integer avgRating;
     private FavouriteDto favouriteDto;
     private UserDto user;

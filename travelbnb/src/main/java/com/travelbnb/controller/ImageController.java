@@ -29,4 +29,18 @@ public class ImageController {
         ImageDto imageDto = imageImpl.uploadImageFile(file, bucketName, propertyId);
         return new ResponseEntity<>(imageDto, HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete/file/{bucketName}/property/{propertyId}")
+    public ResponseEntity<?> deleteImage(@RequestParam Long imageId,
+                                            @PathVariable String bucketName,
+                                            @PathVariable Long propertyId) {
+        boolean isDeleted = imageImpl.deleteImage(imageId, bucketName, propertyId);
+        if (isDeleted) {
+            return new ResponseEntity<>("Image deleted successfully.",HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Failed to delete image.",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
 }

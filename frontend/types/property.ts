@@ -10,7 +10,7 @@ export interface Property {
   country: number;
   location: number;
   description: string;
-  imageUrl: string[];
+  imageUrls: ImageUrl[];
   avgRating: number;
   favouriteDto: FavoritesResponse;
   facilities: string[];
@@ -58,4 +58,10 @@ export interface Review {
   description: string;
   user: User;
   property: number;
+}
+
+export interface ImageUrl{
+    id: number;
+    imageUrl: string;
+    property_id: number;
 }

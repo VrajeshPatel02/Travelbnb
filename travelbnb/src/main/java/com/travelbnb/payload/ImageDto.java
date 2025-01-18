@@ -1,31 +1,20 @@
 package com.travelbnb.payload;
 
+import com.travelbnb.entity.Image;
+import lombok.Data;
+
+@Data
 public class ImageDto {
     private Long id;
     private String imageUrl;
     private Long property_id;
 
-    public Long getId() {
-        return id;
+    public ImageDto() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public Long getProperty_id() {
-        return property_id;
-    }
-
-    public void setProperty_id(Long property_id) {
-        this.property_id = property_id;
+    public ImageDto(Image image){
+        this.id = image.getId();
+        this.imageUrl = image.getImageUrl();
+        this.property_id = image.getProperty().getId();
     }
 }

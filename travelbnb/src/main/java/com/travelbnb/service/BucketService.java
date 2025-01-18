@@ -30,4 +30,13 @@ public class BucketService {
             throw new IllegalStateException("Failed to upload the file",e);
         }
     }
+    public boolean deleteFile(String fileName, String bucketName) {
+        try {
+            amazonS3.deleteObject(bucketName, fileName);
+            return true; // Deletion successful
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Deletion failed
+        }
+    }
 }

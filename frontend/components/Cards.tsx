@@ -22,18 +22,18 @@ const PropertyCard = React.memo(
       onToggleFavorite(property.id);
     }, [property.id, onToggleFavorite]);
 
-    const { id, name, imageUrl, favouriteDto, no_bedrooms, no_bathrooms, price, location, country } = property;
+    const { id, name, imageUrls, favouriteDto, no_bedrooms, no_bathrooms, price, location, country } = property;
 
     return (
       <div className="group">
         <div className="relative aspect-square w-full overflow-hidden rounded-xl">
           <Carousel className="h-full">
             <CarouselContent>
-              {imageUrl.map((image, idx) => (
+              {imageUrls.map((image, idx) => (
                 <CarouselItem key={idx} className="h-full">
                   <div className="relative h-full w-full aspect-square">
                     <Image
-                      src={image}
+                      src={image.imageUrl}
                       alt={`${name} - Image ${idx + 1}`}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

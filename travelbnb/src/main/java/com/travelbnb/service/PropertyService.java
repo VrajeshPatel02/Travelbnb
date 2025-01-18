@@ -1,6 +1,5 @@
 package com.travelbnb.service;
 import com.travelbnb.entity.User;
-import com.travelbnb.payload.AllPropertyDto;
 import com.travelbnb.payload.FormDto;
 import com.travelbnb.payload.PropertyDto;
 import org.springframework.data.domain.Page;
@@ -20,4 +19,6 @@ public interface PropertyService {
 
     Page<PropertyDto> getAll(int pageSize, int pageNo, String sortBy, String sortDir, User user);
     FormDto addNewProperty(FormDto pdto, MultipartFile[] file, User user);
+
+    List<PropertyDto> getHostProperties(User host);
 }

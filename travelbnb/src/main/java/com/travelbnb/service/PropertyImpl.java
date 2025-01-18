@@ -158,6 +158,13 @@ public class PropertyImpl implements PropertyService{
 
         return formDto;
     }
+
+    @Override
+    public List<PropertyDto> getHostProperties(User host) {
+        List<Property> allByUser = propertyRepository.findAllByUser(host.getId());
+        return allByUser.stream().map(this::EntityToDto).collect(Collectors.toList());
+    }
+
     @Override
     public PropertyDto getPropertyById(Long id, User user) {
         Optional<Property> property = propertyRepository.findById(id);
@@ -195,12 +202,10 @@ public class PropertyImpl implements PropertyService{
         pdto.setAvgRating(5);
         List<Image> images = imageRepository.findAllByPropertyId(entity.getId());
         if (!images.isEmpty()) {
-            List<String> imageUrls = images.stream()
-                    .map(Image::getImageUrl) // Extract URLs from the Image entity
-                    .collect(Collectors.toList());
-            pdto.setImageUrl(imageUrls); // Set the list of URLs
+            List<ImageDto> imageDtoList = images.stream().map(ImageDto::new).collect(Collectors.toList());
+            pdto.setImageUrls(imageDtoList);// Set the list of URLs
         } else {
-            pdto.setImageUrl(Collections.emptyList()); // Set an empty list if no images are found
+            pdto.setImageUrls(Collections.emptyList()); // Set an empty list if no images are found
         }
         if(user != null) {
             Optional<Favourite> favourites = favouriteRepository.findFavourites(user.getId(), entity.getId());
@@ -230,12 +235,10 @@ public class PropertyImpl implements PropertyService{
         pdto.setAvgRating(5);
         List<Image> images = imageRepository.findAllByPropertyId(entity.getId());
         if (!images.isEmpty()) {
-            List<String> imageUrls = images.stream()
-                    .map(Image::getImageUrl) // Extract URLs from the Image entity
-                    .collect(Collectors.toList());
-            pdto.setImageUrl(imageUrls); // Set the list of URLs
+            List<ImageDto> imageDtoList = images.stream().map(ImageDto::new).collect(Collectors.toList());// Set the list of URLs
+            pdto.setImageUrls(imageDtoList);
         } else {
-            pdto.setImageUrl(Collections.emptyList()); // Set an empty list if no images are found
+            pdto.setImageUrls(Collections.emptyList()); // Set an empty list if no images are found
         }
         pdto.setFavouriteDto(new FavouriteDto(false)); // Set the favorite status as false if the user is not logged in
         return pdto;

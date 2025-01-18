@@ -2,6 +2,7 @@ package com.travelbnb.repository;
 
 import com.travelbnb.entity.Location;
 import com.travelbnb.entity.Property;
+import com.travelbnb.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,8 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
 
     Optional<Property> findByName(String name);
 
-    Optional<Property> findByNameAndLocation(String name, Location location);
-
     Page<Property> findAll(Pageable pageable);
+
+    @Query(value="SELECT p.* FROM Property p WHERE p.user_id=:hostId", nativeQuery = true)
+    List<Property> findAllByUser(@Param("hostId")Long hostId);
 }

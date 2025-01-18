@@ -47,4 +47,35 @@ public class ImageImpl implements ImageService{
         List<Image> all = imageRepository.findAllByPropertyId(propertyId);
         return all.stream().map(Image::getImageUrl).toList();
     }
+
+    @Override
+    public boolean deleteImage(Long imageId, String bucketName, Long propertyId) {
+        // Find the image by ID
+        Optional<Image> optionalImage = imageRepository.findById(imageId);
+        if (optionalImage.isPresent()) {
+            Image image = optionalImage.get();
+
+            // Extract the image URL or key for S3 deletion
+            String imageUrl = image.getImageUrl();
+            String fileName = extractFileNameFromUrl(imageUrl);
+
+            // Delete the file from S3 bucket
+            boolean isDeletedFromBucket = bucketService.deleteFile(fileName, bucketName);
+
+            if (isDeletedFromBucket) {
+                // Delete the image record from the database
+                imageRepository.delete(image);
+                return true;
+            }
+        }
+
+        return false; // Return false if the image wasn't found or deletion failed
+    }
+
+    private String extractFileNameFromUrl(String imageUrl) {
+        // Assuming the imageUrl contains the file name as the last part after '/'
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+    }
+
+
 }
