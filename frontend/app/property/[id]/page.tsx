@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import api from "@/services/authService";
 import { Property } from "@/types/property";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ import { useProperty } from "@/hooks/useProperty";
 const PropertyDetails = () => {
   const { id } = useParams(); // Fetch property ID from the URL
   const [searchResults, setSearchResults] = useState<Property[] | null>(null);
-
+  const router = useRouter();
 
   const [guestCount, setGuestCount] = useState(1);
   const [nights, setNights] = useState(1);
@@ -237,7 +237,7 @@ const PropertyDetails = () => {
                   </PopoverContent>
                 </Popover>
 
-                <Button className="w-full bg-rose-600 hover:bg-rose-700 text-white">
+                <Button className="w-full bg-rose-600 hover:bg-rose-700 text-white" onClick={()=> router.push(`/property/${property.id}/confirm-pay`)}>
                   Reserve
                 </Button>
 

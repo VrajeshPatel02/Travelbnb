@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Search, Globe, Menu, User } from 'lucide-react';
 import api, { authService } from "../services/authService";
+import UserAvatar from "./UserAvatar";
 
 interface NavbarProps {
     setSearchResults: (results: any[] | null) => void;
@@ -12,21 +13,14 @@ interface NavbarProps {
 const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userDetails, setUserDetails] = useState<{ username: string; email: string } | null>(null);
-    const [showDropdown, setShowDropdown] = useState(false);
     const [hostingButton, useHostingButton] = useState('Airbnb your home')
 
     useEffect(() => {
         const fetchUserDetails = () => {
             if (authService.isAuthenticated()) {
-                setIsAuthenticated(true);
                 const details = authService.getUser();
-                if (details?.role === 'ROLE_ADMIN') {useHostingButton('Switch to hosting')};
-                setUserDetails(details);
-            } else {
-                setIsAuthenticated(false);
-                setUserDetails(null);
+                if (details?.role === 'ROLE_ADMIN') { useHostingButton('Switch to hosting') };
+    
             }
         };
 
@@ -68,18 +62,6 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
             handleSearch();
         }
     };
-
-    const handleLogout = () => {
-        authService.logout();
-        setIsAuthenticated(false);
-        setUserDetails(null);
-        window.location.href = "/login";
-    };
-
-    const getAvatarUrl = (username: string) => {
-        return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`;
-    };
-
     return (
         <header className="fixed inset-x-0 top-0 z-30 w-full bg-white border-b border-gray-200">
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -112,44 +94,12 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
 
                     <div className="flex items-center">
                         <a href="/host" className="hidden md:block text-sm font-semibold text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-full">
-                        {hostingButton}
+                            {hostingButton}
                         </a>
                         <button className="p-2 rounded-full text-gray-700 hover:bg-gray-100">
                             <Globe className="w-5 h-5" />
                         </button>
-                        <div className="relative ml-3">
-                            <button
-                                onClick={() => setShowDropdown(!showDropdown)}
-                                className="flex items-center space-x-2 border border-gray-300 rounded-full p-2 hover:shadow-md transition duration-200"
-                            >
-                                <Menu className="w-5 h-5" />
-                                {isAuthenticated ? (
-                                    <img
-                                        src={getAvatarUrl(userDetails?.username || "")}
-                                        alt="Avatar"
-                                        className="w-7 h-7 rounded-full"
-                                    />
-                                ) : (
-                                    <User className="w-7 h-7 text-gray-500" />
-                                )}
-                            </button>
-                            {showDropdown && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
-                                    {isAuthenticated ? (
-                                        <>
-                                            <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                                            <a href="/bookings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Bookings</a>
-                                            <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <a href="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Log in</a>
-                                            <a href="/sign-up" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign up</a>
-                                        </>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                        <UserAvatar/>
                     </div>
                 </div>
             </div>
@@ -157,5 +107,4 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
     );
 };
 
-export default Navbar;
-
+export default Navbar;  
