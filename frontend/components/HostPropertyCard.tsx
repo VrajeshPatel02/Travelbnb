@@ -29,9 +29,14 @@ const PropertyCard = React.memo(
     return (
       <>
         <Card className="w-full max-w-md group">
+
           <div className="relative">
             {/* Property Image */}
             <CardHeader className="p-0">
+              <div className="absolute top-4 left-4 z-10 bg-white px-3 py-1 rounded-full flex items-center">
+                <div className="w-2 h-2 bg-orange-500 rounded-full mr-2" />
+                <span className="text-sm">In progress</span>
+              </div>
               <div className="relative h-full w-full aspect-square">
                 <Image
                   src={imageUrls[0]?.imageUrl || "/placeholder.svg"} // Add a safe fallback

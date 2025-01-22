@@ -3,11 +3,8 @@ package com.travelbnb.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -52,10 +49,7 @@ public class Property {
     @OneToMany(mappedBy = "property", orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
-    @ElementCollection
-    @CollectionTable(name = "property_facilities",
-            joinColumns = @JoinColumn(name = "property_id"))
-    @Column(name = "facility")
-    private Set<String> facilities = new HashSet<>();
-
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "amenities_id")
+    private Amenities amenities;
 }
