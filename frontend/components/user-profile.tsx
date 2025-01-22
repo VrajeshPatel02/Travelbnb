@@ -1,5 +1,5 @@
-import Image from "next/image"
-import Link from "next/link"
+"use client";
+import { userService } from '@/services/userService';
 import {
   BadgeCheck,
   Building2,
@@ -7,22 +7,45 @@ import {
   Edit,
   Globe2,
   Mail,
-  MapPin,
   MessageSquare,
-  Phone,
   Shield,
   Star,
-  User2,
-} from "lucide-react"
+  User2
+} from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from 'react';
 
-import { Button } from "./ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { Badge } from "./ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 export default function UserProfile() {
+  const [userProfile, setUserProfile] = useState<{
+    name: string;
+    username: string;
+    email: string;
+    role: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await userService.getUserProfile();
+        setUserProfile(profile);
+      } catch (error) {
+        console.error('Failed to fetch user profile', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  if (!userProfile) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-muted/30 pb-12">
       {/* Profile Header */}
@@ -31,8 +54,11 @@ export default function UserProfile() {
           <div className="flex flex-col md:flex-row items-start gap-8">
             <div className="relative group">
               <Avatar className="w-32 h-32">
-                <AvatarImage src="/placeholder.svg" alt="Profile picture" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarImage 
+                  src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(userProfile.username)}`} 
+                  alt="Profile picture" 
+                />
+                <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <Button
                 size="icon"
@@ -46,8 +72,8 @@ export default function UserProfile() {
             <div className="flex-1 space-y-4">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
-                  <h1 className="text-2xl font-bold">John Doe</h1>
-                  <p className="text-muted-foreground">Joined in 2024</p>
+                  <h1 className="text-2xl font-bold">{userProfile.name}</h1>
+                  <p className="text-muted-foreground">@{userProfile.username}</p>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline">
@@ -96,7 +122,7 @@ export default function UserProfile() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p>
-                  Hi, I'm John! I'm a passionate traveler and love hosting people from around the world. I've been
+                  Hi, I'm {userProfile.name}! I'm a passionate traveler and love hosting people from around the world. I've been
                   hosting on Airbnb for over 3 years and have met amazing people from different cultures.
                 </p>
                 <div className="flex items-center gap-2">
@@ -113,38 +139,16 @@ export default function UserProfile() {
             {/* Verification Section */}
             <Card>
               <CardHeader>
-                <CardTitle>Verified Info</CardTitle>
+                <CardTitle>Contact Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="flex items-center gap-4">
-                    <BadgeCheck className="w-5 h-5 text-primary" />
-                    <div>
-                      <p className="font-medium">Identity</p>
-                      <p className="text-sm text-muted-foreground">Government ID verified</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Mail className="w-5 h-5 text-primary" />
-                    <div>
-                      <p className="font-medium">Email address</p>
-                      <p className="text-sm text-muted-foreground">Verified</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Phone className="w-5 h-5 text-primary" />
-                    <div>
-                      <p className="font-medium">Phone number</p>
-                      <p className="text-sm text-muted-foreground">Verified</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <MapPin className="w-5 h-5 text-primary" />
-                    <div>
-                      <p className="font-medium">Address</p>
-                      <p className="text-sm text-muted-foreground">Verified</p>
-                    </div>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-muted-foreground" />
+                  <span>{userProfile.email}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-muted-foreground" />
+                  <span>Role: {userProfile.role}</span>
                 </div>
               </CardContent>
             </Card>
@@ -203,7 +207,7 @@ export default function UserProfile() {
                           </div>
                         </div>
                         <p className="text-muted-foreground">
-                          Amazing host! The place was exactly as described and John was very helpful throughout our
+                          Amazing host! The place was exactly as described and {userProfile.name} was very helpful throughout our
                           stay. Would definitely recommend!
                         </p>
                       </div>
