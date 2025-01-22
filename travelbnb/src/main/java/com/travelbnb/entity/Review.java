@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "review")
 public class Review {
@@ -25,6 +27,9 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(name = "createdAt", nullable = false)
+    private Date createdAt;
 
     public Long getId() {
         return id;
@@ -64,5 +69,15 @@ public class Review {
 
     public void setProperty(Property property) {
         this.property = property;
+    }
+
+
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
     }
 }
