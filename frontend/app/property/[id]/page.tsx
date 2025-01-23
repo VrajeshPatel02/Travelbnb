@@ -1,23 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import api from "@/services/authService";
-import { Property } from "@/types/property";
-import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
-import React from "react";
-import { Card, CardHeader } from "@/components/ui/card";
+import ReviewSection from "@/components/ReviewSection";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card } from "@/components/ui/card";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Input } from "@/components/ui/Input";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { CalendarIcon, Star, Heart, Share, MapPin } from 'lucide-react';
+} from "@/components/ui/popover";
 import { useProperty } from "@/hooks/useProperty";
+import { usePropertyReviews } from "@/hooks/useReview";
+import { Property } from "@/types/property";
+import { format } from "date-fns";
+import { CalendarIcon, Heart, MapPin, Share, Star } from 'lucide-react';
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 
 const PropertyDetails = () => {
   const { id } = useParams(); // Fetch property ID from the URL
@@ -33,6 +32,7 @@ const PropertyDetails = () => {
   const decreaseGuestCount = () => setGuestCount((prev) => Math.max(prev - 1, 1));
 
   const { property, toggleFavorite, isLoading } = useProperty(Number(id));
+  const { reviews, isLoading: reviewsLoading, message } = usePropertyReviews(Number(id));
 
   if (!property || isLoading) {
     return <p className="text-center mt-4">Loading...</p>;
@@ -268,6 +268,16 @@ const PropertyDetails = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ReviewSection 
+          reviews={reviews} 
+          isLoading={reviewsLoading} 
+          message={message} 
+          avgRating={property.avgRating}
+        />
       </div>
     </>
   );

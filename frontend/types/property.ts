@@ -1,4 +1,3 @@
-import { User } from "./auth";
 
 export interface Property {
   id: number;
@@ -56,8 +55,13 @@ export interface Review {
   id: number;
   rating: number;
   description: string;
-  user: User;
+  user: {
+    id: number;
+    name: string;
+    profilePicture?: string;
+  };
   property: number;
+  createdAt: string | Date;
 }
 
 export interface ImageUrl{
