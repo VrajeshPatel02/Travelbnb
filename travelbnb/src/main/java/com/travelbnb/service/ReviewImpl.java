@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ public class ReviewImpl implements ReviewService{
 
     @Override
     public ReviewDto addReview(ReviewDto review, long propertyId, User userId) {
+
         Optional<Property> p = propertyRepository.findById(propertyId);
         Optional<User> u = userRepository.findById(userId.getId());
         Property property = null;
@@ -45,6 +47,11 @@ public class ReviewImpl implements ReviewService{
         Review entity = DtoToEntity(review);
         entity.setProperty(property);
         entity.setUser(user);
+
+        if (entity.getCreatedAt() == null) {
+            entity.setCreatedAt(new Date());
+        }
+
         reviewsRepository.save(entity);
         ReviewDto reviewDto = EntityToDto(entity);
         return reviewDto;
@@ -55,6 +62,10 @@ public class ReviewImpl implements ReviewService{
         entity.setId(review.getId());
         entity.setRating(review.getRating());
         entity.setDescription(review.getDescription());
+
+        if (review.getCreatedAt() != null) {
+            entity.setCreatedAt(review.getCreatedAt());
+        }
         return entity;
     }
     public ReviewDto EntityToDto(Review entity) {
@@ -62,6 +73,7 @@ public class ReviewImpl implements ReviewService{
         dto.setId(entity.getId());
         dto.setRating(entity.getRating());
         dto.setDescription(entity.getDescription());
+        dto.setCreatedAt(entity.getCreatedAt());
         dto.setProperty(entity.getProperty().getId());
         User user = entity.getUser();
         dto.setUser(new UserDto(user.getId(),user.getName(),user.getUsername(), user.getEmail(), user.getRole()));
