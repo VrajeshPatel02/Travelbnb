@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 public class AmenitiesController {
     @Autowired
     private AmenitiesService amenitiesService;
-    @PostMapping("/addAmenities/{proeprtyId}")
-    public ResponseEntity<?> addAmenities(@RequestBody AmenitiesDto adto, @PathVariable Long proeprtyId) {
+    @PostMapping("/addAmenities/{propertyId}")
+    public ResponseEntity<?> addAmenities(@RequestBody AmenitiesDto adto, @PathVariable Long propertyId) {
         try {
-            AmenitiesDto amenitiesDto = amenitiesService.addAmenities(adto, proeprtyId);
+            AmenitiesDto amenitiesDto = amenitiesService.addAmenities(adto, propertyId);
             return new ResponseEntity<>(amenitiesDto, HttpStatus.CREATED);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());

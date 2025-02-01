@@ -48,9 +48,9 @@ public class ReviewImpl implements ReviewService{
         entity.setProperty(property);
         entity.setUser(user);
 
-        if (entity.getCreatedAt() == null) {
-            entity.setCreatedAt(new Date());
-        }
+//        if (entity.getCreatedAt() == null) {
+//            entity.setCreatedAt(new Date());
+//        }
 
         reviewsRepository.save(entity);
         ReviewDto reviewDto = EntityToDto(entity);
@@ -63,9 +63,9 @@ public class ReviewImpl implements ReviewService{
         entity.setRating(review.getRating());
         entity.setDescription(review.getDescription());
 
-        if (review.getCreatedAt() != null) {
-            entity.setCreatedAt(review.getCreatedAt());
-        }
+//        if (review.getCreatedAt() != null) {
+//            entity.setCreatedAt(review.getCreatedAt());
+//        }
         return entity;
     }
     public ReviewDto EntityToDto(Review entity) {
@@ -73,7 +73,7 @@ public class ReviewImpl implements ReviewService{
         dto.setId(entity.getId());
         dto.setRating(entity.getRating());
         dto.setDescription(entity.getDescription());
-        dto.setCreatedAt(entity.getCreatedAt());
+//        dto.setCreatedAt(entity.getCreatedAt());
         dto.setProperty(entity.getProperty().getId());
         User user = entity.getUser();
         dto.setUser(new UserDto(user.getId(),user.getName(),user.getUsername(), user.getEmail(), user.getRole()));

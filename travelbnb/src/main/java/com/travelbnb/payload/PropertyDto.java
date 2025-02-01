@@ -19,5 +19,5 @@ public class PropertyDto {
     private Integer avgRating;
     private FavouriteDto favouriteDto;
     private UserDto user;
-    private Set<String> facilities;
+
 }
