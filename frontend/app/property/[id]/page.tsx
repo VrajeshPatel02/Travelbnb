@@ -15,8 +15,15 @@ import { usePropertyReviews } from "@/hooks/useReview";
 import { Property } from "@/types/property";
 import { format } from "date-fns";
 import { CalendarIcon, Heart, MapPin, Share, Star } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+// Dynamically import the Map component to avoid SSR issues
+const MapComponent = dynamic(() => import('@/components/MapComponent'), {
+  ssr: false,
+  loading: () => <p>Loading map...</p>
+});
 
 const PropertyDetails = () => {
   const { id } = useParams(); // Fetch property ID from the URL
@@ -33,6 +40,25 @@ const PropertyDetails = () => {
 
   const { property, toggleFavorite, isLoading } = useProperty(Number(id));
   const { reviews, isLoading: reviewsLoading, message } = usePropertyReviews(Number(id));
+
+  // Add state for facilities
+  const [facilities, setFacilities] = useState<string[]>([]);
+
+  // Fetch facilities when property is loaded
+  useEffect(() => {
+    const fetchFacilities = async () => {
+      if (property) {
+        try {
+          // Assuming the property object already contains facilities from the backend
+          setFacilities(property.facilities || []);
+        } catch (error) {
+          console.error("Error fetching facilities:", error);
+        }
+      }
+    };
+
+    fetchFacilities();
+  }, [property]);
 
   if (!property || isLoading) {
     return <p className="text-center mt-4">Loading...</p>;
@@ -148,9 +174,9 @@ const PropertyDetails = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-4">What this place offers</h3>
                 <ul className="grid grid-cols-2 gap-4">
-                  {['Kitchen', 'Wifi', 'Free parking', 'Pool'].map((amenity) => (
-                    <li key={amenity} className="flex items-center space-x-2">
-                      <span className="text-gray-600">{amenity}</span>
+                  {facilities.map((facility) => (
+                    <li key={facility} className="flex items-center space-x-2">
+                      <span className="text-gray-600">{facility}</span>
                     </li>
                   ))}
                 </ul>
@@ -279,6 +305,40 @@ const PropertyDetails = () => {
           avgRating={property.avgRating}
         />
       </div>
+
+      {/* Where You'll Be Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h3 className="text-2xl font-semibold mb-6">Where You'll Be</h3>
+        <div className="flex flex-col md:flex-row gap-8 items-start">
+    {/* Location Details */}
+    <Card className="flex-1 p-6 bg-gray-50 shadow-md rounded-lg">
+      <h4 className="text-lg font-semibold mb-4">Explore the Area</h4>
+      <p className="text-gray-700 mb-4">
+        This property is located in <span className="font-medium">{property.location}</span>, <span className="font-medium">{property.country}</span>. The area offers a unique blend of local charm and natural beauty, making it perfect for an unforgettable stay.
+      </p>
+      <div className="space-y-2">
+        <div className="flex items-center">
+          <MapPin className="w-5 h-5 text-rose-500 mr-2" />
+          <p className="text-gray-700">
+            <span className="font-medium">Location:</span> {property.location}
+          </p>
+        </div>
+        <div className="flex items-center">
+          <MapPin className="w-5 h-5 text-rose-500 mr-2" />
+          <p className="text-gray-700">
+            <span className="font-medium">Country:</span> {property.country}
+          </p>
+        </div>
+      </div>
+    </Card>
+
+    {/* Map Component */}
+    <div className="flex-1 h-96 relative rounded-lg overflow-hidden shadow-md">
+      <MapComponent location={`${property.location}, ${property.country}`} />
+    </div>
+  </div>
+</div>
+
     </>
   );
 };
