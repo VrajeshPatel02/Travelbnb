@@ -126,6 +126,11 @@ public class PropertyImpl implements PropertyService{
         property.setDescription(fdto.getDescription());
         property.setUser(user);
 
+        if (fdto.getFacilities() != null){
+            property.setFacilities(new HashSet<>(fdto.getFacilities()));
+        }
+
+
         Property savedProperty = propertyRepository.save(property);
 
         // Create a DTO to return
@@ -139,6 +144,7 @@ public class PropertyImpl implements PropertyService{
         formDto.setCountry(savedProperty.getCountry().getName());
         formDto.setLocation(savedProperty.getLocation().getName());
         formDto.setDescription(savedProperty.getDescription());
+        formDto.setFacilities(savedProperty.getFacilities());
         formDto.setUser(new UserDto(user.getId(), user.getName(), user.getUsername(), user.getEmail(), user.getRole())); // Map only required fields
 
         // Handle file uploads and map to image DTOs
@@ -167,6 +173,7 @@ public class PropertyImpl implements PropertyService{
             PropertyDto propertyDto = EntityToDto(property.get(),user);
             User host = property.get().getUser();
             propertyDto.setUser(new UserDto(host.getId(), host.getName(),host.getUsername(),host.getEmail(),host.getRole()));
+            propertyDto.setFacilities(property.get().getFacilities());
             return propertyDto;
         }else{
             throw( new RuntimeException("Property not found with ID: " + id));
