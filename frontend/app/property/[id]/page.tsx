@@ -3,7 +3,6 @@
 import Navbar from "@/components/Navbar";
 import ReviewSection from "@/components/ReviewSection";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
 import {
   Popover,
@@ -13,11 +12,13 @@ import {
 import { useProperty } from "@/hooks/useProperty";
 import { usePropertyReviews } from "@/hooks/useReview";
 import { Property } from "@/types/property";
-import { format } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 import { CalendarIcon, Heart, MapPin, Share, Star } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
 
 // Dynamically import the Map component to avoid SSR issues
 const MapComponent = dynamic(() => import('@/components/MapComponent'), {
@@ -32,7 +33,10 @@ const PropertyDetails = () => {
 
   const [guestCount, setGuestCount] = useState(1);
   const [nights, setNights] = useState(1);
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [dateRange, setDateRange] = useState<{
+    from?: Date;
+    to?: Date;
+  }>({});
 
   // Handlers for Guests
   const increaseGuestCount = () => setGuestCount((prev) => Math.min(prev + 1, property?.noGuests || prev));
@@ -59,6 +63,46 @@ const PropertyDetails = () => {
 
     fetchFacilities();
   }, [property]);
+
+  // Update the date range selection handler
+  const handleDateRangeSelect = (range?: { from?: Date; to?: Date }) => {
+    // Safely handle undefined or empty range
+    if (!range || (!range.from && !range.to)) {
+      setDateRange({});
+      return;
+    }
+
+    // Ensure we only set defined values
+    setDateRange({
+      from: range.from,
+      to: range.to
+    });
+  };
+
+  // Calculate total cost with additional fees
+  const calculateCostBreakdown = () => {
+    if (dateRange.from && dateRange.to && property) {
+      const nights = differenceInDays(dateRange.to, dateRange.from);
+      const nightlyRate = property.price;
+      const subtotal = nights * nightlyRate;
+      
+      // Add some standard fees (you can adjust these as needed)
+      const cleaningFee = 500; // Fixed cleaning fee
+      const serviceFee = Math.ceil(subtotal * 0.03); // 3% service fee
+      
+      const total = subtotal + cleaningFee + serviceFee;
+
+      return {
+        nights,
+        nightlyRate,
+        subtotal,
+        cleaningFee,
+        serviceFee,
+        total
+      };
+    }
+    return null;
+  };
 
   if (!property || isLoading) {
     return <p className="text-center mt-4">Loading...</p>;
@@ -201,26 +245,27 @@ const PropertyDetails = () => {
                   <div className="flex">
                     <div className="w-1/2 p-2 border-r border-gray-300">
                       <div className="text-xs uppercase font-bold text-gray-500">Check-in</div>
-                      <div>{format(date || new Date(), "MMM d, yyyy")}</div>
+                      <div>{dateRange.from ? format(dateRange.from, "MMM d, yyyy") : "Add dates"}</div>
                     </div>
                     <div className="w-1/2 p-2">
                       <div className="text-xs uppercase font-bold text-gray-500">Checkout</div>
-                      <div>{format(date ? new Date(date.getTime() + nights * 24 * 60 * 60 * 1000) : new Date(), "MMM d, yyyy")}</div>
+                      <div>{dateRange.to ? format(dateRange.to, "MMM d, yyyy") : "Add dates"}</div>
                     </div>
                   </div>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full rounded-none border-t border-gray-300">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        {dateRange.from ? format(dateRange.from, "PPP") : <span>Pick a date</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        initialFocus
+                      <DayPicker
+                        mode="range"
+                        selected={dateRange}
+                        onSelect={handleDateRangeSelect}
+                        numberOfMonths={2}
+                        className="border rounded-lg p-4 shadow-md"
                       />
                     </PopoverContent>
                   </Popover>
@@ -263,32 +308,43 @@ const PropertyDetails = () => {
                   </PopoverContent>
                 </Popover>
 
-                <Button className="w-full bg-rose-600 hover:bg-rose-700 text-white" onClick={()=> router.push(`/property/${property.id}/confirm-pay`)}>
-                  Reserve
-                </Button>
+                <div>
+                  <div className="bg-white border rounded-lg p-6 shadow-md">
+                    {/* Detailed Cost Breakdown */}
+                    {dateRange.from && dateRange.to && (
+                      <div className="mb-4 space-y-2">
+                        <div className="flex justify-between">
+                          <span>₹{property.price} x {calculateCostBreakdown()?.nights} nights</span>
+                          <span>₹{calculateCostBreakdown()?.subtotal}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-600">
+                          <span>Cleaning fee</span>
+                          <span>₹{calculateCostBreakdown()?.cleaningFee}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-600">
+                          <span>Service fee</span>
+                          <span>₹{calculateCostBreakdown()?.serviceFee}</span>
+                        </div>
+                        <hr className="my-2" />
+                        <div className="flex justify-between font-semibold">
+                          <span>Total</span>
+                          <span>₹{calculateCostBreakdown()?.total}</span>
+                        </div>
+                      </div>
+                    )}
 
-                <div className="text-center text-gray-500 mt-4">
-                  You won't be charged yet
-                </div>
-
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between">
-                    <span className="underline">₹{property.price.toLocaleString()} x {nights} nights</span>
-                    <span>₹{(property.price * nights).toLocaleString()}</span>
+                    {/* Reserve Button */}
+                    <button 
+                      className={`w-full py-3 rounded-lg ${
+                        dateRange.from && dateRange.to 
+                          ? 'bg-rose-500 text-white hover:bg-rose-600' 
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                      disabled={!dateRange.from || !dateRange.to}
+                    >
+                      Reserve
+                    </button>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="underline">Cleaning fee</span>
-                    <span>₹1,000</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="underline">Service fee</span>
-                    <span>₹2,000</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-gray-300 flex justify-between font-bold">
-                  <span>Total</span>
-                  <span>₹{(property.price * nights + 3000).toLocaleString()}</span>
                 </div>
               </Card>
             </div>
