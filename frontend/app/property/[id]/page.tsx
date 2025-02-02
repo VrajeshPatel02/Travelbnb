@@ -12,7 +12,7 @@ import {
 import { useProperty } from "@/hooks/useProperty";
 import { usePropertyReviews } from "@/hooks/useReview";
 import { Property } from "@/types/property";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays, format, isPast, isToday } from "date-fns";
 import { CalendarIcon, Heart, MapPin, Share, Star } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useParams, useRouter } from "next/navigation";
@@ -34,6 +34,12 @@ const PropertyDetails = () => {
   const [guestCount, setGuestCount] = useState(1);
   const [nights, setNights] = useState(1);
   const [dateRange, setDateRange] = useState<{
+    from?: Date;
+    to?: Date;
+  }>({});
+
+  // Additional calendar state (optional, but can be used for more flexibility)
+  const [additionalDateRange, setAdditionalDateRange] = useState<{
     from?: Date;
     to?: Date;
   }>({});
@@ -64,16 +70,25 @@ const PropertyDetails = () => {
     fetchFacilities();
   }, [property]);
 
-  // Update the date range selection handler
-  const handleDateRangeSelect = (range?: { from?: Date; to?: Date }) => {
-    // Safely handle undefined or empty range
+  // Simplified and more robust date range selection handler
+  const handleDateRangeSelect = (
+    range?: { from?: Date; to?: Date }, 
+    rangeType: 'main' | 'additional' = 'main'
+  ) => {
     if (!range || (!range.from && !range.to)) {
+      // Clear both ranges if no dates selected
       setDateRange({});
+      setAdditionalDateRange({});
       return;
     }
 
-    // Ensure we only set defined values
+    // Update both ranges simultaneously
     setDateRange({
+      from: range.from,
+      to: range.to
+    });
+
+    setAdditionalDateRange({
       from: range.from,
       to: range.to
     });
@@ -86,9 +101,8 @@ const PropertyDetails = () => {
       const nightlyRate = property.price;
       const subtotal = nights * nightlyRate;
       
-      // Add some standard fees (you can adjust these as needed)
-      const cleaningFee = 500; // Fixed cleaning fee
-      const serviceFee = Math.ceil(subtotal * 0.03); // 3% service fee
+      const cleaningFee = 500;
+      const serviceFee = Math.ceil(subtotal * 0.14);
       
       const total = subtotal + cleaningFee + serviceFee;
 
@@ -102,6 +116,11 @@ const PropertyDetails = () => {
       };
     }
     return null;
+  };
+
+  // Disable past dates and today's date
+  const isPastOrTodayDate = (date: Date) => {
+    return isPast(date) || isToday(date);
   };
 
   if (!property || isLoading) {
@@ -263,9 +282,44 @@ const PropertyDetails = () => {
                       <DayPicker
                         mode="range"
                         selected={dateRange}
-                        onSelect={handleDateRangeSelect}
+                        onSelect={(range) => handleDateRangeSelect(range, 'main')}
+                        disabled={isPastOrTodayDate}
                         numberOfMonths={2}
                         className="border rounded-lg p-4 shadow-md"
+                        classNames={{
+                          day_range_start: "bg-rose-500 text-white rounded-full",
+                          day_range_end: "bg-rose-500 text-white rounded-full",
+                          day_range_middle: "bg-rose-100 text-rose-600 rounded-none",
+                          day_selected: "bg-rose-500 text-white rounded-full",
+                        }}
+                        styles={{
+                          day: {
+                            position: 'relative',
+                          }
+                        }}
+                        modifiersStyles={{
+                          range: {
+                            backgroundColor: 'rgb(254 205 211 / 0.5)', // rose-200 with opacity
+                            color: 'rgb(190 18 60)', // rose-600
+                          },
+                          range_start: {
+                            backgroundColor: 'rgb(244 63 94)', // rose-500
+                            color: 'white',
+                          },
+                          range_end: {
+                            backgroundColor: 'rgb(244 63 94)', // rose-500
+                            color: 'white',
+                          }
+                        }}
+                        modifiers={{
+                          range: (date) => {
+                            if (!dateRange.from || !dateRange.to) return false;
+                            return (
+                              date >= dateRange.from && 
+                              date <= dateRange.to
+                            );
+                          }
+                        }}
                       />
                     </PopoverContent>
                   </Popover>
@@ -352,7 +406,86 @@ const PropertyDetails = () => {
         </div>
       </div>
 
-      {/* Reviews Section */}
+      {/* New Additional Calendar Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gray-50">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <h3 className="text-3xl font-bold text-gray-900">Check Your Dates</h3>
+            <p className="text-lg text-gray-600">
+              Select your travel dates and explore availability for this stunning property. 
+              Flexible booking options to suit your travel plans.
+            </p>
+            <div className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-md">
+              <CalendarIcon className="w-6 h-6 text-rose-500" />
+              <div>
+                <p className="font-semibold text-gray-800">Flexible Dates</p>
+                <p className="text-sm text-gray-500">
+                  {dateRange.from && dateRange.to 
+                    ? `${format(dateRange.from, 'MMM dd')} - ${format(dateRange.to, 'MMM dd')}`
+                    : 'Select your travel dates'}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <DayPicker
+              mode="range"
+              selected={additionalDateRange}
+              onSelect={(range) => handleDateRangeSelect(range, 'additional')}
+              disabled={isPastOrTodayDate}
+              numberOfMonths={2}
+              className="p-6 border-none"
+              styles={{
+                day: {
+                  position: 'relative',
+                }
+              }}
+              classNames={{
+                caption: "flex justify-between items-center",
+                caption_label: "text-lg font-bold text-gray-800",
+                nav_button: "hover:bg-gray-100 rounded-full p-2",
+                nav_button_previous: "absolute left-2",
+                nav_button_next: "absolute right-2",
+                head_cell: "text-gray-500 uppercase text-xs font-semibold",
+                cell: "p-1 text-center relative",
+                day: "hover:bg-rose-100 hover:text-rose-600 rounded-full relative",
+                day_range_start: "bg-rose-500 text-white rounded-full z-10 relative",
+                day_range_end: "bg-rose-500 text-white rounded-full z-10 relative",
+                day_range_middle: "bg-rose-100 text-rose-600 rounded-none relative",
+                day_selected: "bg-rose-500 text-white rounded-full",
+                day_today: "bg-gray-100 text-gray-900 rounded-full",
+                day_outside: "text-gray-300",
+              }}
+              modifiersStyles={{
+                range: {
+                  backgroundColor: 'rgb(254 205 211 / 0.5)', // rose-200 with opacity
+                  color: 'rgb(190 18 60)', // rose-600
+                },
+                range_start: {
+                  backgroundColor: 'rgb(244 63 94)', // rose-500
+                  color: 'white',
+                },
+                range_end: {
+                  backgroundColor: 'rgb(244 63 94)', // rose-500
+                  color: 'white',
+                }
+              }}
+              modifiers={{
+                range: (date) => {
+                  if (!additionalDateRange.from || !additionalDateRange.to) return false;
+                  return (
+                    date >= additionalDateRange.from && 
+                    date <= additionalDateRange.to
+                  );
+                }
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* reviews section*/}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ReviewSection 
           reviews={reviews} 
@@ -363,38 +496,58 @@ const PropertyDetails = () => {
       </div>
 
       {/* Where You'll Be Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h3 className="text-2xl font-semibold mb-6">Where You'll Be</h3>
-        <div className="flex flex-col md:flex-row gap-8 items-start">
-    {/* Location Details */}
-    <Card className="flex-1 p-6 bg-gray-50 shadow-md rounded-lg">
-      <h4 className="text-lg font-semibold mb-4">Explore the Area</h4>
-      <p className="text-gray-700 mb-4">
-        This property is located in <span className="font-medium">{property.location}</span>, <span className="font-medium">{property.country}</span>. The area offers a unique blend of local charm and natural beauty, making it perfect for an unforgettable stay.
-      </p>
-      <div className="space-y-2">
-        <div className="flex items-center">
-          <MapPin className="w-5 h-5 text-rose-500 mr-2" />
-          <p className="text-gray-700">
-            <span className="font-medium">Location:</span> {property.location}
-          </p>
-        </div>
-        <div className="flex items-center">
-          <MapPin className="w-5 h-5 text-rose-500 mr-2" />
-          <p className="text-gray-700">
-            <span className="font-medium">Country:</span> {property.country}
-          </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-white">
+        <div className="grid md:grid-cols-2 gap-12">
+          <div className="space-y-6">
+            <h3 className="text-3xl font-bold text-gray-900">Where You'll Be</h3>
+            <Card className="bg-gray-50 border-none shadow-lg p-6 rounded-2xl">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <MapPin className="w-6 h-6 text-rose-500" />
+                  <div>
+                    <p className="font-semibold text-gray-800">Location</p>
+                    <p className="text-gray-600">{property.location}, {property.country}</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 leading-relaxed">
+                  This property is nestled in the heart of {property.location}, offering a unique blend of 
+                  local charm and natural beauty. Experience the authentic essence of the region 
+                  with stunning surroundings and local attractions nearby.
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white p-4 rounded-lg shadow-md">
+                    <p className="text-sm text-gray-500">Neighborhood</p>
+                    <p className="font-semibold">{property.location}</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg shadow-md">
+                    <p className="text-sm text-gray-500">Country</p>
+                    <p className="font-semibold">{property.country}</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="relative rounded-2xl overflow-hidden shadow-xl">
+            <MapComponent 
+              location={`${property.location}, ${property.country}`} 
+              className="w-full h-full"
+            />
+            <div className="absolute bottom-4 left-4 right-4">
+              <div className="bg-white rounded-lg shadow-lg p-4 inline-block">
+                <div className="flex items-center space-x-3">
+                  <MapPin className="w-5 h-5 text-rose-500" />
+                  <p className="text-gray-800 font-semibold whitespace-nowrap">
+                    Exact location provided after booking
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </Card>
 
-    {/* Map Component */}
-    <div className="flex-1 h-96 relative rounded-lg overflow-hidden shadow-md">
-      <MapComponent location={`${property.location}, ${property.country}`} />
-    </div>
-  </div>
-</div>
-
+ 
     </>
   );
 };
