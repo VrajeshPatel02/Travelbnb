@@ -7,11 +7,12 @@ import { Card } from "@/components/ui/card";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger
 } from "@/components/ui/popover";
 import { useProperty } from "@/hooks/useProperty";
 import { usePropertyReviews } from "@/hooks/useReview";
 import { Property } from "@/types/property";
+import { PopoverClose } from "@radix-ui/react-popover";
 import { differenceInDays, format, isPast, isToday } from "date-fns";
 import { CalendarIcon, Heart, MapPin, Share, Star } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -121,6 +122,12 @@ const PropertyDetails = () => {
   // Disable past dates and today's date
   const isPastOrTodayDate = (date: Date) => {
     return isPast(date) || isToday(date);
+  };
+
+  // Add a method to clear dates
+  const clearDates = () => {
+    setDateRange({});
+    setAdditionalDateRange({});
   };
 
   if (!property || isLoading) {
@@ -278,49 +285,72 @@ const PropertyDetails = () => {
                         {dateRange.from ? format(dateRange.from, "PPP") : <span>Pick a date</span>}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <DayPicker
-                        mode="range"
-                        selected={dateRange}
-                        onSelect={(range) => handleDateRangeSelect(range, 'main')}
-                        disabled={isPastOrTodayDate}
-                        numberOfMonths={2}
-                        className="border rounded-lg p-4 shadow-md"
-                        classNames={{
-                          day_range_start: "bg-rose-500 text-white rounded-full",
-                          day_range_end: "bg-rose-500 text-white rounded-full",
-                          day_range_middle: "bg-rose-100 text-rose-600 rounded-none",
-                          day_selected: "bg-rose-500 text-white rounded-full",
-                        }}
-                        styles={{
-                          day: {
-                            position: 'relative',
-                          }
-                        }}
-                        modifiersStyles={{
-                          range: {
-                            backgroundColor: 'rgb(254 205 211 / 0.5)', // rose-200 with opacity
-                            color: 'rgb(190 18 60)', // rose-600
-                          },
-                          range_start: {
-                            backgroundColor: 'rgb(244 63 94)', // rose-500
-                            color: 'white',
-                          },
-                          range_end: {
-                            backgroundColor: 'rgb(244 63 94)', // rose-500
-                            color: 'white',
-                          }
-                        }}
-                        modifiers={{
-                          range: (date) => {
-                            if (!dateRange.from || !dateRange.to) return false;
-                            return (
-                              date >= dateRange.from && 
-                              date <= dateRange.to
-                            );
-                          }
-                        }}
-                      />
+                    <PopoverContent 
+                      className="w-auto p-0 relative" 
+                      onCloseAutoFocus={(e) => e.preventDefault()}
+                      onEscapeKeyDown={(e) => e.preventDefault()}
+                    >
+                      <div className="relative">
+                        <DayPicker
+                          mode="range"
+                          selected={dateRange}
+                          onSelect={(range) => handleDateRangeSelect(range, 'main')}
+                          disabled={isPastOrTodayDate}
+                          numberOfMonths={2}
+                          className="border rounded-lg p-4 shadow-md"
+                          classNames={{
+                            day_range_start: "bg-rose-500 text-white rounded-full",
+                            day_range_end: "bg-rose-500 text-white rounded-full",
+                            day_range_middle: "bg-rose-100 text-rose-600 rounded-none",
+                            day_selected: "bg-rose-500 text-white rounded-full",
+                          }}
+                          styles={{
+                            day: {
+                              position: 'relative',
+                            }
+                          }}
+                          modifiersStyles={{
+                            range: {
+                              backgroundColor: 'rgb(254 205 211 / 0.5)', // rose-200 with opacity
+                              color: 'rgb(190 18 60)', // rose-600
+                            },
+                            range_start: {
+                              backgroundColor: 'rgb(244 63 94)', // rose-500
+                              color: 'white',
+                            },
+                            range_end: {
+                              backgroundColor: 'rgb(244 63 94)', // rose-500
+                              color: 'white',
+                            }
+                          }}
+                          modifiers={{
+                            range: (date) => {
+                              if (!dateRange.from || !dateRange.to) return false;
+                              return (
+                                date >= dateRange.from && 
+                                date <= dateRange.to
+                              );
+                            }
+                          }}
+                        />
+                        {(dateRange.from && dateRange.to) && (
+                          <div className="absolute bottom-4 right-4 z-50 flex space-x-2">
+                            <button 
+                              onClick={clearDates}
+                              className="bg-rose-100 text-rose-600 px-3 py-1.5 rounded-md text-sm hover:bg-rose-200 transition-colors"
+                            >
+                              Clear
+                            </button>
+                            <PopoverClose asChild>
+                              <button 
+                                className="bg-rose-500 text-white px-3 py-1.5 rounded-md text-sm hover:bg-rose-600 transition-colors"
+                              >
+                                Close
+                              </button>
+                            </PopoverClose>
+                          </div>
+                        )}
+                      </div>
                     </PopoverContent>
                   </Popover>
                 </div>
@@ -410,7 +440,10 @@ const PropertyDetails = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gray-50">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h3 className="text-3xl font-bold text-gray-900">Check Your Dates</h3>
+            <div className="flex justify-between items-center">
+              <h3 className="text-3xl font-bold text-gray-900">Select Your Dates</h3>
+            
+            </div>
             <p className="text-lg text-gray-600">
               Select your travel dates and explore availability for this stunning property. 
               Flexible booking options to suit your travel plans.
@@ -428,7 +461,7 @@ const PropertyDetails = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden relative">
             <DayPicker
               mode="range"
               selected={additionalDateRange}
@@ -481,6 +514,14 @@ const PropertyDetails = () => {
                 }
               }}
             />
+            {additionalDateRange.from && additionalDateRange.to && (
+              <button 
+                onClick={clearDates}
+                className="absolute bottom-4 right-4 z-50 bg-rose-500 text-white px-3 py-1.5 rounded-md text-sm hover:bg-rose-600 transition-colors"
+              >
+                Clear Dates
+              </button>
+            )}
           </div>
         </div>
       </div>
