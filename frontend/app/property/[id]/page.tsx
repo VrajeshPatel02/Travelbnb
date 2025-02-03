@@ -130,6 +130,34 @@ const PropertyDetails = () => {
     setAdditionalDateRange({});
   };
 
+  const handleReserveClick = () => {
+    if (!dateRange.from || !dateRange.to || !property) return;
+    
+    const costBreakdown = calculateCostBreakdown();
+    if (!costBreakdown) return;
+
+    const bookingDetails = {
+      propertyId: property.id,
+      propertyName: property.name,
+      checkIn: dateRange.from.toISOString(),
+      checkOut: dateRange.to.toISOString(),
+      guests: guestCount,
+      nights: costBreakdown.nights,
+      pricePerNight: costBreakdown.nightlyRate,
+      subtotal: costBreakdown.subtotal,
+      cleaningFee: costBreakdown.cleaningFee,
+      serviceFee: costBreakdown.serviceFee,
+      total: costBreakdown.total,
+      imageUrl: property.imageUrls[0].imageUrl
+    };
+
+    // Store booking details in localStorage or state management
+    localStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+    
+    // Navigate to payment confirmation page
+    router.push(`/payment/confirm`);
+  };
+
   if (!property || isLoading) {
     return <p className="text-center mt-4">Loading...</p>;
   }
@@ -425,6 +453,7 @@ const PropertyDetails = () => {
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                       disabled={!dateRange.from || !dateRange.to}
+                      onClick={handleReserveClick}
                     >
                       Reserve
                     </button>
