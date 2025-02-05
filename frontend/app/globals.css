@@ -69,4 +69,12 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
+  .rdp-day_range_middle {
+    @apply bg-rose-100 text-rose-600 hover:bg-rose-200 hover:text-rose-700;
+  }
+  
+  .rdp-day_range_start, .rdp-day_range_end {
+    @apply bg-rose-500 text-white hover:bg-rose-600;
+  }
 }
