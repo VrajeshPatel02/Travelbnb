@@ -1,5 +1,5 @@
-
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as SonnerToaster } from 'sonner';
 import { AuthProvider } from "../contexts/AuthContext";
 import "./globals.css";
 
@@ -17,6 +17,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <Toaster />
+          <SonnerToaster />
         </AuthProvider>
       </body>
     </html>

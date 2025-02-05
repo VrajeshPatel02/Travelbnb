@@ -2,11 +2,23 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/label';
+import {
+  CardElement,
+  Elements,
+  useElements,
+  useStripe
+} from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import { format } from 'date-fns';
-import { CalendarIcon, Loader2, Users } from 'lucide-react';
+import { CalendarIcon, CreditCard, Loader2, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+
+// Stripe configuration
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface BookingDetails {
   propertyId: number;
@@ -23,10 +35,136 @@ interface BookingDetails {
   imageUrl: string;
 }
 
+interface PaymentFormProps {
+  bookingDetails: BookingDetails;
+}
+
+function PaymentForm({ bookingDetails }: PaymentFormProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      // Extract card details
+      const cardElement = elements.getElement(CardElement);
+      
+      // Prepare payment request
+      const paymentRequest = {
+        cardholderName: name,
+        email: email,
+        amount: bookingDetails.total // Total amount from booking
+      };
+
+      // Send payment request to backend
+      const response = await fetch('http://localhost:8080/api/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentRequest)
+      });
+
+      // Handle response
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success('Payment Processed', {
+          description: `Transaction ID: ${result.transactionId}`
+        });
+
+        router.push('/payment/success');
+      } else {
+        toast.error('Payment Failed', {
+          description: result.message || 'Payment processing error'
+        });
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Payment Processing Error', {
+        description: 'Please try again later'
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="name">Cardholder Name</Label>
+        <Input 
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="John Doe"
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="email">Email</Label>
+        <Input 
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="john@example.com"
+          required
+        />
+      </div>
+      <div>
+        <Label>Card Details</Label>
+        <div className="border p-2 rounded-md">
+          <CardElement 
+            options={{
+              style: {
+                base: {
+                  fontSize: '16px',
+                  color: '#424770',
+                  '::placeholder': {
+                    color: '#aab7c4',
+                  },
+                },
+                invalid: {
+                  color: '#9e2146',
+                },
+              },
+            }}
+          />
+        </div>
+      </div>
+      <Button 
+        type="submit" 
+        className="w-full bg-rose-500 hover:bg-rose-600 text-white"
+        disabled={isProcessing || !stripe}
+      >
+        {isProcessing ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          'Pay Now'
+        )}
+      </Button>
+    </form>
+  );
+}
+
 export default function PaymentConfirmation() {
   const router = useRouter();
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const storedDetails = localStorage.getItem('bookingDetails');
@@ -36,62 +174,6 @@ export default function PaymentConfirmation() {
     }
     setBookingDetails(JSON.parse(storedDetails));
   }, [router]);
-
-  const handleConfirmPayment = async () => {
-    if (!bookingDetails) return;
-
-    setIsProcessing(true);
-
-    try {
-      const response = await fetch('/api/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingDetails)
-      });
-
-      // Check if the response is OK
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      if (result.success) {
-        // Store payment confirmation details
-        localStorage.setItem('paymentConfirmation', JSON.stringify({
-          ...result.paymentDetails,
-          bookingDetails
-        }));
-
-        // Clear booking details
-        localStorage.removeItem('bookingDetails');
-
-        // Show success toast
-        toast.success('Payment Processed Successfully', {
-          description: `Transaction ID: ${result.transactionId}`
-        });
-
-        // Redirect to success page
-        router.push('/payment/success');
-      } else {
-        // Show error toast
-        toast.error('Payment Failed', {
-          description: result.message || 'Unknown error occurred'
-        });
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Payment Processing Error', {
-        description: error instanceof Error ? error.message : 'Please try again later'
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   if (!bookingDetails) {
     return <div>Loading...</div>;
@@ -149,6 +231,14 @@ export default function PaymentConfirmation() {
                 </div>
               </div>
             </Card>
+
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
+              <div className="flex items-center gap-4 mb-4">
+                <CreditCard className="w-6 h-6 text-gray-500" />
+                <p className="font-semibold">Credit / Debit Card</p>
+              </div>
+            </Card>
           </div>
 
           <div className="md:col-span-2">
@@ -167,20 +257,9 @@ export default function PaymentConfirmation() {
                 </div>
               </div>
               
-              <Button 
-                className="w-full bg-rose-500 hover:bg-rose-600 text-white"
-                onClick={handleConfirmPayment}
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  'Confirm Payment'
-                )}
-              </Button>
+              <Elements stripe={stripePromise}>
+                <PaymentForm bookingDetails={bookingDetails} />
+              </Elements>
             </Card>
           </div>
         </div>

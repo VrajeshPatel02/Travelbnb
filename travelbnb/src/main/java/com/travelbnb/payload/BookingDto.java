@@ -11,15 +11,9 @@ public class BookingDto {
     private Long user_id;
     private Integer totalNight;
     private Integer totalCost;
-    private Integer TotalNightlyPrice;
+    private double totalNightlyPrice;
 
-    public Integer getTotalNightlyPrice() {
-        return TotalNightlyPrice;
-    }
 
-    public void setTotalNightlyPrice(Integer totalNightlyPrice) {
-        TotalNightlyPrice = totalNightlyPrice;
-    }
 
     public Long getId() {
         return id;
@@ -91,6 +85,14 @@ public class BookingDto {
 
     public void setTotalCost(Integer totalCost) {
         this.totalCost = totalCost;
+    }
+
+    public double getTotalNightlyPrice() {
+        return totalNightlyPrice;
+    }
+
+    public void setTotalNightlyPrice(double totalNightlyPrice) {
+        this.totalNightlyPrice = totalNightlyPrice;
     }
 
 
