@@ -35,7 +35,7 @@ export default function PaymentConfirmation() {
                 const bookingDto = {
                     name: paymentDetails.cardholderName,
                     email: paymentDetails.email,
-                    mobile: paymentDetails.mobile || '+917802033371', // Fallback to a valid number
+                    mobile: paymentDetails.mobile, // Fallback to a valid number
                     price: bookingDetails.pricePerNight,
                     totalNight: bookingDetails.nights,
                     totalCost: bookingDetails.total,

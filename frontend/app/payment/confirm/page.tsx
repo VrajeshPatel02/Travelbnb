@@ -47,6 +47,7 @@ function PaymentForm({ bookingDetails }: PaymentFormProps) {
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
+  const [mobile, setmobile] = useState('');
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -54,7 +55,8 @@ function PaymentForm({ bookingDetails }: PaymentFormProps) {
     // Store payment details in localStorage
     localStorage.setItem('paymentDetails', JSON.stringify({
       cardholderName: name,
-      email: email
+      email: email,
+      mobile: mobile,
     }));
 
     // Redirect to payment confirmation page
@@ -81,6 +83,22 @@ function PaymentForm({ bookingDetails }: PaymentFormProps) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="john@example.com"
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="mobile">Phone Number</Label>
+        <Input 
+          id="mobile"
+          value={mobile}
+          onChange={(e) => {
+            const value = e.target.value;
+            // Allow only digits and '+' at the start
+            if (/^\+?\d*$/.test(value) && (value.length <= 13)) {
+              setmobile(value);
+            }
+          }}
+          placeholder="+911234567890"
           required
         />
       </div>

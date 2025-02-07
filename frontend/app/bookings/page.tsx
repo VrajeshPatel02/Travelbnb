@@ -127,6 +127,10 @@ export default function BookingsPage() {
                   <div className="flex items-center gap-2">
                     <span>Total: ₹{booking.totalCost}</span>
                   </div>
+
+                  <div className="flex items-center gap-2">
+                    <span>Phone: {booking.mobile}</span> {/* Display phone number */}
+                  </div>
                   
                   <div className="flex space-x-4">
                     <Button 
