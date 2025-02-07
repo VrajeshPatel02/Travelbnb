@@ -6,8 +6,12 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "booking")
+@Getter
+@Setter
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +45,14 @@ public class Booking {
 
     @Column(name = "total_cost")
     private Integer totalCost;
+
+    @Column(name = "check_in", nullable = false)
+    private LocalDate checkIn;
+
+    @Column(name = "check_out", nullable = false)
+    private LocalDate checkOut;
+
+
 
     public Integer getTotalCost() {
         return totalCost;

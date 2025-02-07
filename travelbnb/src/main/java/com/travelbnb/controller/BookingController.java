@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/bookings")
 public class BookingController {
@@ -25,5 +27,11 @@ public class BookingController {
                                            @AuthenticationPrincipal User user){
         BookingDto bookingDto = booking.addBooking(dto, propertyId, user);
         return new ResponseEntity<>(bookingDto, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/userBookings")
+    public ResponseEntity<List<BookingDto>> getUserBookings(@AuthenticationPrincipal User user){
+        List<BookingDto> bookings = booking.getUserBookings(user);
+        return new ResponseEntity<>(bookings, HttpStatus.OK);
     }
 }

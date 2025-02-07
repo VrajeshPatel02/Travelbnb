@@ -1,5 +1,11 @@
 package com.travelbnb.payload;
 
+import com.travelbnb.entity.Image;
+import lombok.Data;
+
+import java.time.LocalDate;
+import java.util.List;
+@Data
 public class BookingDto {
 
     private Long id;
@@ -11,9 +17,27 @@ public class BookingDto {
     private Long user_id;
     private Integer totalNight;
     private Integer totalCost;
+    private LocalDate checkIn;
+    private LocalDate checkOut;
     private double totalNightlyPrice;
+    private String imageUrl;
 
 
+    public LocalDate getCheckIn() {
+        return checkIn;
+    }
+
+    public void setCheckIn(LocalDate checkIn) {
+        this.checkIn = checkIn;
+    }
+
+    public LocalDate getCheckOut() {
+        return checkOut;
+    }
+
+    public void setCheckOut(LocalDate checkOut) {
+        this.checkOut = checkOut;
+    }
 
     public Long getId() {
         return id;

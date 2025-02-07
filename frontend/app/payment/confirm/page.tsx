@@ -5,7 +5,6 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/label';
 import {
-  CardElement,
   Elements,
   useElements,
   useStripe
@@ -15,7 +14,6 @@ import { format } from 'date-fns';
 import { CalendarIcon, CreditCard, Loader2, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
-import { toast } from 'sonner';
 
 // Stripe configuration
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -46,58 +44,21 @@ function PaymentForm({ bookingDetails }: PaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvv, setCvv] = useState('');
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    if (!stripe || !elements) {
-      return;
-    }
+    // Store payment details in localStorage
+    localStorage.setItem('paymentDetails', JSON.stringify({
+      cardholderName: name,
+      email: email
+    }));
 
-    setIsProcessing(true);
-
-    try {
-      // Extract card details
-      const cardElement = elements.getElement(CardElement);
-      
-      // Prepare payment request
-      const paymentRequest = {
-        cardholderName: name,
-        email: email,
-        amount: bookingDetails.total // Total amount from booking
-      };
-
-      // Send payment request to backend
-      const response = await fetch('http://localhost:8080/api/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(paymentRequest)
-      });
-
-      // Handle response
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success('Payment Processed', {
-          description: `Transaction ID: ${result.transactionId}`
-        });
-
-        router.push('/payment/success');
-      } else {
-        toast.error('Payment Failed', {
-          description: result.message || 'Payment processing error'
-        });
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Payment Processing Error', {
-        description: 'Please try again later'
-      });
-    } finally {
-      setIsProcessing(false);
-    }
+    // Redirect to payment confirmation page
+    router.push('/payment/confirmation');
   };
 
   return (
@@ -125,29 +86,28 @@ function PaymentForm({ bookingDetails }: PaymentFormProps) {
       </div>
       <div>
         <Label>Card Details</Label>
-        <div className="border p-2 rounded-md">
-          <CardElement 
-            options={{
-              style: {
-                base: {
-                  fontSize: '16px',
-                  color: '#424770',
-                  '::placeholder': {
-                    color: '#aab7c4',
-                  },
-                },
-                invalid: {
-                  color: '#9e2146',
-                },
-              },
-            }}
+        <div className="grid grid-cols-2 gap-4">
+          <Input 
+            placeholder="Card Number" 
+            value={cardNumber}
+            onChange={(e) => setCardNumber(e.target.value)}
+          />
+          <Input 
+            placeholder="Expiry (MM/YY)" 
+            value={expiry}
+            onChange={(e) => setExpiry(e.target.value)}
+          />
+          <Input 
+            placeholder="CVV" 
+            value={cvv}
+            onChange={(e) => setCvv(e.target.value)}
           />
         </div>
       </div>
       <Button 
         type="submit" 
         className="w-full bg-rose-500 hover:bg-rose-600 text-white"
-        disabled={isProcessing || !stripe}
+        disabled={isProcessing}
       >
         {isProcessing ? (
           <>

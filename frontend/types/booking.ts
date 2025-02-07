@@ -1,6 +1,15 @@
 export interface Booking {
+    id?: number;
+    property_id?: number;
     name: string;
-    phone: number;
     email: string;
-    totalNights: number;
+    mobile: string;
+    price: number;
+    user_id?: number;
+    totalNight: number;
+    totalCost: number;
+    checkIn: string | Date;
+    checkOut: string | Date;
+    totalNightlyPrice?: number;
+    imageUrl: string;
 }
