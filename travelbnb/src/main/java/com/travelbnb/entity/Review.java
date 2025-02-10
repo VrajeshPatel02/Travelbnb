@@ -28,24 +28,24 @@ public class Review {
     @JoinColumn(name = "user_id")
     private User user;
 
-//    @Column(name = "createdAt", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-//    private Date createdAt;
-//
-//    public Date getCreatedAt() {
-//        return createdAt;
-//    }
-//
-//    public void setCreatedAt(Date createdAt) {
-//        this.createdAt = createdAt;
-//    }
-//
-//    // If you want to automatically set the timestamp before persisting
-//    @PrePersist
-//    protected void onCreate() {
-//        if (this.createdAt == null) {
-//            this.createdAt = new Date();
-//        }
-//    }
+    @Column(name = "createdAt", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Date createdAt;
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    // If you want to automatically set the timestamp before persisting
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = new Date();
+        }
+    }
 
     public Long getId() {
         return id;

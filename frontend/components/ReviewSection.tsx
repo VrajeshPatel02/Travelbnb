@@ -71,7 +71,12 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                 <p className="text-sm text-gray-500">
                   {new Date(review.createdAt).toLocaleDateString('en-US', { 
                     month: 'long', 
-                    year: 'numeric' 
+                    year: 'numeric',
+                    day: 'numeric'
+                  })} at {new Date(review.createdAt).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
                   })}
                 </p>
               </div>
@@ -124,7 +129,12 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                     <p className="text-sm text-gray-500">
                       {new Date(review.createdAt).toLocaleDateString('en-US', { 
                         month: 'long', 
-                        year: 'numeric' 
+                        year: 'numeric',
+                        day: 'numeric'
+                      })} at {new Date(review.createdAt).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
                       })}
                     </p>
                   </div>

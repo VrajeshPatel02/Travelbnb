@@ -13,7 +13,7 @@ interface NavbarProps {
 const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [hostingButton, useHostingButton] = useState('Airbnb your home')
+    const [hostingButton, useHostingButton] = useState('Host your home')
 
     useEffect(() => {
         const fetchUserDetails = () => {

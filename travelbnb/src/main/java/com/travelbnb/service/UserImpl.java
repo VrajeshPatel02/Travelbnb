@@ -35,6 +35,7 @@ public class UserImpl implements UserService{
         dto.setEmail(entity.getEmail());
         dto.setPassword(entity.getPassword());
         dto.setRole(entity.getRole());
+        dto.setCreatedAt(entity.getCreatedAt());
         return dto;
     }
 
@@ -46,6 +47,7 @@ public class UserImpl implements UserService{
         entity.setEmail(userDto.getEmail());
         entity.setPassword(BCrypt.hashpw(userDto.getPassword(), BCrypt.gensalt(10)));
         entity.setRole(userDto.getRole());
+        entity.setCreatedAt(userDto.getCreatedAt());
         return entity;
     }
 
@@ -71,7 +73,7 @@ public class UserImpl implements UserService{
                 JWTTokenDto jwtTokenDto = new JWTTokenDto();
                 jwtTokenDto.setType("JWT Token");
                 jwtTokenDto.setToken(token);
-                jwtTokenDto.setUser(new UserDto(user.getId(), user.getName(),user.getUsername(), user.getEmail(), user.getRole()));
+                jwtTokenDto.setUser(new UserDto(user.getId(), user.getName(),user.getUsername(), user.getEmail(), user.getRole(), user.getCreatedAt()));
                 return jwtTokenDto;
             }
         }

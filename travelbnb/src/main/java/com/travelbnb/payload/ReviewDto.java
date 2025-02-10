@@ -12,6 +12,6 @@ public class ReviewDto {
     private String description;
     private UserDto user;
     private Long property;
-//
-//    private Date createdAt;
+
+    private Date createdAt;
 }

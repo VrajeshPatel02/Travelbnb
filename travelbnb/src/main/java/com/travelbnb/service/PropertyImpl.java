@@ -145,7 +145,7 @@ public class PropertyImpl implements PropertyService{
         formDto.setLocation(savedProperty.getLocation().getName());
         formDto.setDescription(savedProperty.getDescription());
         formDto.setFacilities(savedProperty.getFacilities());
-        formDto.setUser(new UserDto(user.getId(), user.getName(), user.getUsername(), user.getEmail(), user.getRole())); // Map only required fields
+        formDto.setUser(new UserDto(user.getId(), user.getName(), user.getUsername(), user.getEmail(), user.getRole(), user.getCreatedAt())); // Map only required fields
 
         // Handle file uploads and map to image DTOs
         if (files != null && files.length > 0) {
@@ -172,7 +172,14 @@ public class PropertyImpl implements PropertyService{
         if(property.isPresent()){
             PropertyDto propertyDto = EntityToDto(property.get(),user);
             User host = property.get().getUser();
-            propertyDto.setUser(new UserDto(host.getId(), host.getName(),host.getUsername(),host.getEmail(),host.getRole()));
+            propertyDto.setUser(new UserDto(
+                    host.getId(),
+                    host.getName(),
+                    host.getUsername(),
+                    host.getEmail(),
+                    host.getRole(),
+                    host.getCreatedAt()
+            ));
             propertyDto.setFacilities(property.get().getFacilities());
             return propertyDto;
         }else{
