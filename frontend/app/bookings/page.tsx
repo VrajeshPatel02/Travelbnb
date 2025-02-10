@@ -1,5 +1,6 @@
 'use client';
 
+import ReviewForm from '@/components/ReviewForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import BookingService from '@/services/bookingService';
@@ -27,29 +28,29 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await BookingService.getUserBookings();
-        console.log('Fetched bookings response:', response); // Log the entire response
+  const fetchBookings = async () => {
+    try {
+      const response = await BookingService.getUserBookings();
+      console.log('Fetched bookings response:', response); // Log the entire response
 
-        // Check if the response is an array and has elements
-        if (Array.isArray(response) && response.length > 0) {
-          console.log('Fetched bookings:', response); // Log the bookings data
-          setBookings(response);
-        } else {
-          // Handle case where response is empty or undefined
-          console.error('No bookings found in response');
-          toast.error('No bookings found');
-        }
-      } catch (error) {
-        console.error('Error fetching bookings:', error);
-        toast.error('Failed to load bookings');
-      } finally {
-        setIsLoading(false);
+      // Check if the response is an array and has elements
+      if (Array.isArray(response) && response.length > 0) {
+        console.log('Fetched bookings:', response); // Log the bookings data
+        setBookings(response);
+      } else {
+        // Handle case where response is empty or undefined
+        console.error('No bookings found in response');
+        toast.error('No bookings found');
       }
-    };
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+      toast.error('Failed to load bookings');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchBookings();
   }, []);
 
@@ -146,6 +147,7 @@ export default function BookingsPage() {
                       </Button>
                     )}
                   </div>
+                  <ReviewForm propertyId={booking.property_id} onReviewAdded={fetchBookings} />
                 </CardContent>
               </div>
             </Card>
