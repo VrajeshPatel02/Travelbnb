@@ -1,5 +1,6 @@
 "use client";
 
+import { HostDetailsModal } from "@/components/HostDetailsModal";
 import Navbar from "@/components/Navbar";
 import ReviewSection from "@/components/ReviewSection";
 import { Button } from "@/components/ui/button";
@@ -158,6 +159,9 @@ const PropertyDetails = () => {
     router.push(`/payment/confirm`);
   };
 
+  // Add state for modal
+  const [showHostDetails, setShowHostDetails] = useState(false)
+
   if (!property || isLoading) {
     return <p className="text-center mt-4">Loading...</p>;
   }
@@ -247,17 +251,22 @@ const PropertyDetails = () => {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h2 className="text-2xl font-semibold mb-2">
-                    Entire villa hosted by john doe
+                    Entire villa hosted by {property.user?.name}
                   </h2>
                   <p className="text-gray-600">
                     {property.noGuests} guests · {property.no_bedrooms} bedrooms · {property.no_bathrooms} bathrooms
                   </p>
                 </div>
-                <img
-                  src="https://via.placeholder.com/64"
-                  alt="Host"
-                  className="w-16 h-16 rounded-full"
-                />
+                <button 
+                  onClick={() => setShowHostDetails(true)}
+                  className="hover:opacity-80 transition-opacity"
+                >
+                  <img
+                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${property.user?.username}`}
+                    alt={property.user?.name}
+                    className="w-16 h-16 rounded-full"
+                  />
+                </button>
               </div>
 
               <hr className="my-8" />
@@ -618,7 +627,12 @@ const PropertyDetails = () => {
         </div>
       </div>
 
- 
+      {/* Add the modal component */}
+      <HostDetailsModal 
+        isOpen={showHostDetails}
+        onClose={() => setShowHostDetails(false)}
+        host={property.user}
+      />
     </>
   );
 };

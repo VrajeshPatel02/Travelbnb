@@ -69,3 +69,14 @@ export interface ImageUrl{
     imageUrl: string;
     property_id: number;
 }
+
+export interface Property {
+  // ... existing fields ...
+  user: {
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+    role: string;
+  };
+}
