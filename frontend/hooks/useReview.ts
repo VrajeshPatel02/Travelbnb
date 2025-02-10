@@ -19,16 +19,13 @@ export const usePropertyReviews = (propertyId: number) => {
 
       if (fetchedReviews.length > 0) {
         setReviews(fetchedReviews);
-        setMessage(null); // Clear the message if reviews are found
+        setMessage(null);
       } else {
         setMessage('No reviews yet for this property.');
       }
     } catch (error) {
       setMessage('Failed to fetch reviews. Please try again later.');
-      console.error(
-        'Error fetching reviews:',
-        error instanceof Error ? error.message : error
-      );
+      console.error('Error fetching reviews:', error instanceof Error ? error.message : error);
     } finally {
       setIsLoading(false);
     }
@@ -38,10 +35,16 @@ export const usePropertyReviews = (propertyId: number) => {
     fetchPropertyReviews();
   }, [fetchPropertyReviews]);
 
-  // Calculate average rating
   const averageRating = reviews.length > 0 
-    ? (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1) 
-    : '0.0'; // Default to '0.0' if no reviews
+    ? (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(2)
+    : '0.00';
 
-  return { reviews, isLoading, message, fetchPropertyReviews, averageRating: parseFloat(averageRating), totalReviews: reviews.length };
+  return { 
+    reviews, 
+    isLoading, 
+    message, 
+    fetchPropertyReviews, 
+    averageRating: Number(averageRating), 
+    totalReviews: reviews.length 
+  };
 };

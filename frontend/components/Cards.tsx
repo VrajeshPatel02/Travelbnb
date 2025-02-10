@@ -1,9 +1,10 @@
+import { Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
+import { usePropertyReviews } from "../hooks/useReview";
 import { Property } from "../types/property";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
-import { Heart } from "lucide-react";
 
 interface PropertyCardProps {
   property: Property;
@@ -14,6 +15,7 @@ const PropertyCard = React.memo(
   ({ property, onToggleFavorite }: PropertyCardProps) => {
     // Add local state to handle immediate UI updates
     const [isLocalFavorite, setIsLocalFavorite] = useState(property.favouriteDto.status);
+    const { reviews, averageRating } = usePropertyReviews(property.id);
 
     // Handle favorite toggle with local state
     const handleFavoriteClick = useCallback((event: React.MouseEvent) => {
@@ -77,7 +79,9 @@ const PropertyCard = React.memo(
               >
                 <path d="M15.094 1.579l-4.124 8.885-9.86 1.27a1 1 0 0 0-.542 1.736l7.293 6.565-1.965 9.852a1 1 0 0 0 1.483 1.061L16 25.951l8.625 4.997a1 1 0 0 0 1.482-1.06l-1.965-9.853 7.293-6.565a1 1 0 0 0-.541-1.735l-9.86-1.271-4.127-8.885a1 1 0 0 0-1.814 0z" fillRule="evenodd"></path>
               </svg>
-              <span className="text-sm font-semibold text-neutral-800">4.99</span>
+              <span className="text-sm font-semibold text-neutral-800">
+                {Number(averageRating).toFixed(2)}
+              </span>
             </div>
           </div>
           <p className="text-sm text-neutral-500">
