@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
-import { Star, ChevronRight } from 'lucide-react';
-import { Review } from '@/types/property';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Review } from '@/types/property';
+import { ChevronRight, Star } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface ReviewSectionProps {
   reviews: Review[];
   isLoading: boolean;
   message?: string | null;
   avgRating: number;
+  totalReviews: number;
 }
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({ 
   reviews, 
   isLoading, 
   message, 
-  avgRating 
+  avgRating, 
+  totalReviews 
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -49,7 +51,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           <span className="text-2xl font-bold">{avgRating.toFixed(2)}</span>
         </div>
         <span className="text-gray-500">·</span>
-        <span className="text-lg font-semibold">{reviews.length} reviews</span>
+        <span className="text-lg font-semibold">{totalReviews} reviews</span>
       </div>
 
       {/* Review Grid */}
@@ -89,7 +91,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             variant="outline" 
             onClick={() => setIsDialogOpen(true)}
           >
-            Show all {reviews.length} reviews
+            Show all {totalReviews} reviews
             <ChevronRight className="ml-2 w-4 h-4" />
           </Button>
         </div>
@@ -102,7 +104,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             <DialogTitle>
               <div className="flex items-center space-x-4">
                 <Star className="w-6 h-6 fill-rose-500 text-rose-500" />
-                <span>{avgRating.toFixed(2)} · {reviews.length} reviews</span>
+                <span>{avgRating.toFixed(2)} · {totalReviews} reviews</span>
               </div>
             </DialogTitle>
           </DialogHeader>

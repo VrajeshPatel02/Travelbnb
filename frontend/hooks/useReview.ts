@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
 import { reviewService } from '@/services/reviewService';
 import { Review } from '@/types/property';
+import { useCallback, useEffect, useState } from 'react';
 
 export const usePropertyReviews = (propertyId: number) => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -38,5 +38,10 @@ export const usePropertyReviews = (propertyId: number) => {
     fetchPropertyReviews();
   }, [fetchPropertyReviews]);
 
-  return { reviews, isLoading, message, fetchPropertyReviews };
+  // Calculate average rating
+  const averageRating = reviews.length > 0 
+    ? (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1) 
+    : '0.0'; // Default to '0.0' if no reviews
+
+  return { reviews, isLoading, message, fetchPropertyReviews, averageRating: parseFloat(averageRating), totalReviews: reviews.length };
 };

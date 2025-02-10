@@ -50,7 +50,7 @@ const PropertyDetails = () => {
   const decreaseGuestCount = () => setGuestCount((prev) => Math.max(prev - 1, 1));
 
   const { property, toggleFavorite, isLoading } = useProperty(Number(id));
-  const { reviews, isLoading: reviewsLoading, message } = usePropertyReviews(Number(id));
+  const { reviews, isLoading: reviewsLoading, message, averageRating, totalReviews } = usePropertyReviews(Number(id));
 
   // Add state for facilities
   const [facilities, setFacilities] = useState<string[]>([]);
@@ -171,9 +171,9 @@ const PropertyDetails = () => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-2">
               <Star className="w-5 h-5 text-rose-500" />
-              <span className="font-semibold">4.9</span>
+              <span className="font-semibold">{averageRating}</span>
               <span className="text-gray-500">·</span>
-              <span className="underline font-semibold">289 reviews</span>
+              <span className="underline font-semibold">{totalReviews} reviews</span>
               <span className="text-gray-500">·</span>
               <MapPin className="w-4 h-4" />
               <span className="underline font-semibold">{property.location}</span>
@@ -290,8 +290,8 @@ const PropertyDetails = () => {
                   </div>
                   <div className="flex items-center">
                     <Star className="w-4 h-4 text-rose-500 mr-1" />
-                    <span className="font-semibold">4.9</span>
-                    <span className="text-gray-500 ml-1">(289)</span>
+                    <span className="font-semibold">{averageRating}</span>
+                    <span className="text-gray-500 ml-1">({totalReviews})</span>
                   </div>
                 </div>
 
@@ -561,7 +561,8 @@ const PropertyDetails = () => {
           reviews={reviews} 
           isLoading={reviewsLoading} 
           message={message} 
-          avgRating={property.avgRating}
+          avgRating={averageRating} 
+          totalReviews={totalReviews} 
         />
       </div>
 
