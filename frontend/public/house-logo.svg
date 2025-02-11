@@ -1,0 +1,7 @@
+<svg width="180"
+ height="40"
+  viewBox="0 0 180 40" 
+  xmlns="http://www.w3.org/2000/svg">
+   <!-- House Icon --> <path d="M20 35h16M12 35V19l16-12 16 12v16H12z" stroke="#FF385C" stroke-width="2" fill="none"/>
+    <!-- Plane Icon --> <path d="M36 16l-8-8 2-2c.5-.5 1.5-.5 2 0l6 6c.5.5.5 1.5 0 2l-2 2z" fill="#FF385C"/> 
+    <!-- Text --> <text x="50" y="27" font-family="Arial, sans-serif" font-weight="bold" font-size="24" fill="#484848"> Travelbnb </text> </svg>

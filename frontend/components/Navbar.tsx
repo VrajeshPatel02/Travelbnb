@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Search, Globe, Menu, User } from 'lucide-react';
+import { Globe, Search } from 'lucide-react';
+import { useEffect, useState } from "react";
 import api, { authService } from "../services/authService";
 import UserAvatar from "./UserAvatar";
 
@@ -68,7 +68,7 @@ const Navbar = ({ setSearchResults, resetSearch }: NavbarProps) => {
                 <div className="flex items-center justify-between h-16">
                     <div className="flex-shrink-0">
                         <a href="/" className="flex items-center">
-                            <img src="/airbnb-logo.svg" alt="Logo" className="h-8 w-auto" />
+                            <img src="/travelbnb-logo.svg" alt="TravelBnB Logo" className="h-8 w-auto" />
                         </a>
                     </div>
 

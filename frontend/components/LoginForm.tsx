@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { LoginRequest } from "@/types/auth";
+
 import { authService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/Input";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import Link from "next/link";
-import { FaFacebook, FaGoogle, FaApple } from 'react-icons/fa';
 
 const loginSchema = z.object({
   username: z.string().min(1, {
@@ -78,8 +77,8 @@ const LoginForm = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Image
-          src="/airbnb-logo.svg"
-          alt="Airbnb Logo"
+          src="/house-logo.svg"
+          alt="travelbnb Logo"
           width={102}
           height={32}
           className="mx-auto h-8 w-auto"
@@ -140,50 +139,7 @@ const LoginForm = () => {
             </form>
           </Form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with Facebook</span>
-                  <FaFacebook className="w-5 h-5" />
-                </a>
-              </div>
-
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with Google</span>
-                  <FaGoogle className="w-5 h-5" />
-                </a>
-              </div>
-
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with Apple</span>
-                  <FaApple className="w-5 h-5" />
-                </a>
-              </div>
-            </div>
-          </div>
+         
 
           <div className="mt-6">
             <div className="relative">

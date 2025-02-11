@@ -14,12 +14,11 @@ export default function RootLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="w-8 h-8 rounded-full" >
-              <a href="/" className="flex items-center">
-                <img src="/airbnb-logo.svg" alt="Logo" className="h-8 w-auto" />
-              </a>
-            </div>
-
+            <div className="flex-shrink-0">
+                        <a href="/" className="flex items-center">
+                            <img src="/travelbnb-logo.svg" alt="TravelBnB Logo" className="h-8 w-auto" />
+                        </a>
+                    </div>
             {/* Navigation Links */}
             <div className="hidden md:flex space-x-8">
               <Button variant="ghost">Today</Button>
