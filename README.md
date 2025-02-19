@@ -1,112 +1,214 @@
-🌍 TravelBnb - Property Booking Platform 🏡
-TravelBnb is a full-stack property booking application that allows users to list, browse, and book properties for their stays.TravelBnb provides a seamless experience with real-time notifications, secure booking management, and a modern UI.
+🌍 TravelBnb - Property Booking Platform 
+🏡TravelBnb is a full-stack property booking application that allows users to list, browse, and book properties for their stays
+.TravelBnb provides a seamless experience with real-time notifications, secure booking management, and a modern UI.
 
 🚀 Features
+
 🏠 Property Management
+
 ✔️ List properties with detailed information
+
 ✔️ Upload multiple images per property
+
 ✔️ Search & filter properties easily
+
 ✔️ Location-based browsing
+
 ✔️ Manage amenities & facilities
 
+
 📅 Booking System
+
 ✔️ Check availability in real time
+
 ✔️ Secure booking & payment process
+
 ✔️ Modify or cancel bookings
+
 ✔️ Generate PDF confirmations
+
 ✔️ Get instant notifications via WhatsApp & Email
 
+
+
 👤 User Features
+
 ✔️ Authentication & role-based access
+
 ✔️ Property reviews & ratings
+
 ✔️ Save favorite properties
+
 ✔️ Manage host & guest profiles
+
 ✔️ View booking history
+
+
 
 📩 Communication
 ✔️ WhatsApp integration for instant updates
+
 ✔️ Email notifications for booking confirmations
+
 ✔️ PDF receipts & booking details
+
 ✔️ Real-time booking status updates
 
+
+
 🛠 Technology Stack
+
 🌐 Frontend
+
 Next.js (React Framework)
+
 TypeScript
+
 Tailwind CSS (Modern UI)
+
 Redux (State Management)
+
 Axios (API Integration)
 
+
+
 🔙 Backend
+
 Spring Boot
+
 Hibernate ORM
+
 MySQL Database
+
 JWT Authentication
+
 Spring Security
 
+
+
 ☁️ Cloud Services & APIs
+
 AWS S3 (Image Storage)
+
 Twilio (Sms Integration)
+
 iText (PDF Generation)
 
+
+
 🏗 Architecture
+
 Following MVC (Model-View-Controller) architecture:
+
 🔹 Model: Database logic & entity management
+
 🔹 View: Next.js frontend
+
 🔹 Controller: REST APIs for business logic
 
+
+
 📊 Database Schema
+
 Key entities in the relational database:
+
 📌 Users (Hosts & Guests)
+
 📌 Properties
+
 📌 Bookings
+
 📌 Reviews
+
 📌 Images
+
 📌 Locations
 
+
+
 🔐 Security Features
+
 🔒 JWT-based authentication
+
 🔒 Password encryption
+
 🔒 Role-based access control
+
 🔒 Secure API endpoints
+
 🔒 Input validation & sanitization
 
+
+
 ⚠️ Error Handling & Logging
+
 🛑 Global exception handling
+
 🛑 Custom error messages
+
 🛑 Logging for debugging
+
 🛑 Graceful error recovery
 
+
+
 🛠 Getting Started
+
 🔹 Prerequisites
+
 📌 Node.js
+
 📌 Java 17
+
 📌 MySQL
+
 📌 AWS Account
+
 📌 Twilio Account
 
+
+
 🔹 Installation
+
 1️⃣ Clone the Repository
 
 bash
+
 git clone https://github.com/yourusername/travelbnb.git
+
+
 
 2️⃣ Backend Setup
 
+
 for backend add application.properties file
+
 and set up variables for database connection
+
 aws clod storage and twilio for sms integration
 
+
+
 3️⃣ Frontend Setup
+
 cd frontend
+
 npm install
 
+
 4️⃣ Configure Environment Variables
+
 Set up environment variables for:
+
 ✅ Database connection
+
 ✅ AWS credentials
+
 ✅ Twilio API keys
+
 ✅ JWT secrets
+
+
 
 5️⃣ Run the Application
 
@@ -129,9 +231,12 @@ Set up environment variables for:
 ![image](https://github.com/user-attachments/assets/95ce35b6-2ffe-4e21-b00a-7d57a27736f9)
 
 👥 Team Members & Credits
+
 Developed by:
 
 Aarav Choksi
+
 Vrajesh Patel
+
 
 🚀 Built with passion and collaboration!
