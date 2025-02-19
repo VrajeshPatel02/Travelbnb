@@ -217,21 +217,39 @@ Set up environment variables for:
 
 📸 Screenshots
 ![image](https://github.com/user-attachments/assets/fea6d2ef-6a38-4b3c-aaa0-ab090fe30f4c)
+
 ![image](https://github.com/user-attachments/assets/4e4faa6c-2b63-441d-ad27-4b8784f0ea2b)
+
 ![image](https://github.com/user-attachments/assets/231c1c09-f488-492e-98d7-eb47ed8b1ed5)
+
 ![image](https://github.com/user-attachments/assets/fabd8bd2-7cc2-47c3-be5e-024f91371e32)
+
 ![image](https://github.com/user-attachments/assets/29388253-f335-4f42-8cd5-10fe114a8ceb)
+
 ![image](https://github.com/user-attachments/assets/e616471c-0d11-4fa4-a6b4-8b80a615271c)
+
+![image](https://github.com/user-attachments/assets/0483256f-1b40-468f-b149-dee3eeb91126)
+
 ![image](https://github.com/user-attachments/assets/c99c5b19-521a-449c-8736-aafa39a7e4c3)
+
 ![image](https://github.com/user-attachments/assets/f3851731-ad3d-45be-b61d-9340b67fdf3b)
+
 ![image](https://github.com/user-attachments/assets/bc6d6611-10df-45d1-9dba-43ec852e918a)
+
 ![image](https://github.com/user-attachments/assets/977d433e-99e5-4ac1-bc9d-a0f1a5d6a936)
+
 ![image](https://github.com/user-attachments/assets/c73dbc2b-e0fc-4f23-aa17-4a160dc76667)
+
 ![image](https://github.com/user-attachments/assets/ee4007df-00f9-4c9d-b365-dca1640ed98b)
+
 ![image](https://github.com/user-attachments/assets/ac24fc45-5eb4-4b28-8fbc-47798e8c6409)
+
 ![image](https://github.com/user-attachments/assets/971ecd55-0d04-48e3-a3fe-a67222012d87)
+
 ![image](https://github.com/user-attachments/assets/bcaa98e8-89af-481a-968c-86f94fe1491f)
+
 ![image](https://github.com/user-attachments/assets/95ce35b6-2ffe-4e21-b00a-7d57a27736f9)
+
 
 👥 Team Members & Credits
 
