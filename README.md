@@ -16,6 +16,7 @@
 
 ✔️ Manage amenities & facilities
 
+  .
 
 📅 Booking System
 
@@ -29,7 +30,7 @@
 
 ✔️ Get instant notifications via WhatsApp & Email
 
-
+.
 
 👤 User Features
 
@@ -43,9 +44,10 @@
 
 ✔️ View booking history
 
-
+.
 
 📩 Communication
+
 ✔️ WhatsApp integration for instant updates
 
 ✔️ Email notifications for booking confirmations
@@ -54,7 +56,7 @@
 
 ✔️ Real-time booking status updates
 
-
+.
 
 🛠 Technology Stack
 
@@ -70,7 +72,7 @@ Redux (State Management)
 
 Axios (API Integration)
 
-
+.
 
 🔙 Backend
 
@@ -84,7 +86,7 @@ JWT Authentication
 
 Spring Security
 
-
+.
 
 ☁️ Cloud Services & APIs
 
@@ -94,7 +96,7 @@ Twilio (Sms Integration)
 
 iText (PDF Generation)
 
-
+.
 
 🏗 Architecture
 
@@ -106,7 +108,7 @@ Following MVC (Model-View-Controller) architecture:
 
 🔹 Controller: REST APIs for business logic
 
-
+.
 
 📊 Database Schema
 
@@ -124,7 +126,7 @@ Key entities in the relational database:
 
 📌 Locations
 
-
+.
 
 🔐 Security Features
 
@@ -138,7 +140,7 @@ Key entities in the relational database:
 
 🔒 Input validation & sanitization
 
-
+.
 
 ⚠️ Error Handling & Logging
 
@@ -150,7 +152,7 @@ Key entities in the relational database:
 
 🛑 Graceful error recovery
 
-
+.
 
 🛠 Getting Started
 
@@ -166,7 +168,7 @@ Key entities in the relational database:
 
 📌 Twilio Account
 
-
+.
 
 🔹 Installation
 
@@ -176,7 +178,7 @@ bash
 
 git clone https://github.com/yourusername/travelbnb.git
 
-
+.
 
 2️⃣ Backend Setup
 
@@ -187,7 +189,7 @@ and set up variables for database connection
 
 aws clod storage and twilio for sms integration
 
-
+.
 
 3️⃣ Frontend Setup
 
@@ -195,6 +197,7 @@ cd frontend
 
 npm install
 
+.
 
 4️⃣ Configure Environment Variables
 
@@ -208,7 +211,7 @@ Set up environment variables for:
 
 ✅ JWT secrets
 
-
+.
 
 5️⃣ Run the Application
 
