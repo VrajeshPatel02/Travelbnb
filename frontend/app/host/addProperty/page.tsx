@@ -1,9 +1,9 @@
 "use client"
 
-import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import api from "@/services/authService";
 import { Camera, X } from 'lucide-react';
+import React, { useEffect, useState } from "react";
 
 const Properties: React.FC = () => {
   const { toast } = useToast();
@@ -60,19 +60,34 @@ const Properties: React.FC = () => {
     if (!e.target.files?.length) return;
     
     const files = Array.from(e.target.files);
-    const newImages = files.filter((file) => !formData.images.includes(file));
+    
+    // Create a new array with only unique files
+    const existingUrls = new Set(imagePreviews);
+    const newImages: File[] = [];
+    const newPreviews: string[] = [];
+
+    files.forEach((file) => {
+      const previewUrl = URL.createObjectURL(file);
+      if (!existingUrls.has(previewUrl)) {
+        newImages.push(file);
+        newPreviews.push(previewUrl);
+      }
+    });
 
     setFormData({
       ...formData,
       images: [...formData.images, ...newImages],
     });
 
-    const newPreviews = newImages.map((file) => URL.createObjectURL(file));
     setImagePreviews([...imagePreviews, ...newPreviews]);
   };
 
   const removeImage = (index: number) => {
     const newImages = formData.images.filter((_, i) => i !== index);
+    
+    // Cleanup the removed preview URL
+    URL.revokeObjectURL(imagePreviews[index]);
+    
     const newPreviews = imagePreviews.filter((_, i) => i !== index);
 
     setFormData({ ...formData, images: newImages });
@@ -184,6 +199,13 @@ const Properties: React.FC = () => {
       />
     </div>
   );
+
+  useEffect(() => {
+    return () => {
+      // Cleanup object URLs when component unmounts
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, []);
 
   if (step === 2) {
     return (

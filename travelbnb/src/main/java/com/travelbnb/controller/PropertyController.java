@@ -82,10 +82,10 @@ public class PropertyController {
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteProperty")
-    public ResponseEntity<?> deleteProperty(@RequestParam Long id) {
-        boolean b = property.deleteProperty(id);
-        if (!b) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProperty(@PathVariable Long id) {
+        boolean isDeleted = property.deleteProperty(id);
+        if (isDeleted) {
             return new ResponseEntity<>("Success", HttpStatus.OK);
         }
         return new ResponseEntity<>("Property not found", HttpStatus.NOT_FOUND);
